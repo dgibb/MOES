@@ -1,0 +1,332 @@
+html {
+  overflow-y: scroll; }
+
+html, body, #app, #react-root, .content {
+  background-color: white;
+  min-height: 100vh;
+  width: 100%; }
+
+.button-container {
+  padding-top: 30px;
+  text-align: center; }
+  .button-container button, .button-container input {
+    font-size: 20px;
+    border: 2px solid #222222;
+    border-radius: 5px;
+    background-color: white;
+    transition: all .5s; }
+    .button-container button a, .button-container input a {
+      color: #222222; }
+    .button-container button:hover, .button-container input:hover {
+      color: white;
+      background-color: #23527b; }
+      .button-container button:hover a, .button-container input:hover a {
+        color: white;
+        text-decoration: none; }
+
+#button-container {
+  transition: all .1s ease-in-out;
+  height: 165px;
+  max-height: 165px;
+  transition: max-height .1s; }
+
+.inner-container {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%); }
+  .inner-container h1 {
+    font-size: 50px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif; }
+  .inner-container h2 {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    margin-top: 0px; }
+  .inner-container p {
+    text-align: center;
+    font-family: 'Source Sans Pro', sans-serif; }
+
+.outer-container {
+  padding-top: 50px;
+  padding-bottom: 50px; }
+
+.outer-container.white {
+  background-color: white; }
+
+#buttons {
+  padding: 30px; }
+  #buttons a {
+    border-radius: 5px;
+    text-decoration: none;
+    background-color: #2b2b2b;
+    border: none;
+    color: #f7f7f7;
+    margin: 30px;
+    padding: 10px; }
+    #buttons a:hover {
+      background-color: #23527b; }
+
+.content {
+  background-color: #f7f7f7; }
+
+#footer {
+  width: 100%;
+  background-color: #2b2b2b;
+  text-align: center;
+  padding: 30px; }
+  #footer a {
+    text-decoration: none;
+    color: #f7f7f7;
+    margin-left: 15px;
+    margin-right: 15px; }
+
+#header-container {
+  width: 100%;
+  background-color: #222222;
+  z-index: 30; }
+
+#header-links {
+  margin-top: 33px;
+  margin-bottom: 25px;
+  float: right; }
+  #header-links a {
+    text-decoration: none;
+    font-size: 20px;
+    font-family: 'Roboto', sans-serif;
+    color: #f7f7f7;
+    padding: 7px; }
+    #header-links a:hover {
+      color: #498bc5; }
+
+#ham-menu {
+  display: none; }
+
+.images {
+  margin-bottom: 50px; }
+  .images img {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px; }
+
+.page-title-container {
+  height: 50vw;
+  max-height: 50vh;
+  background-size: 100%;
+  background-repeat: no-repeat; }
+  .page-title-container .title-inner-container {
+    height: 100%; }
+    .page-title-container .title-inner-container .title-container {
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%); }
+      .page-title-container .title-inner-container .title-container h1 {
+        margin: 0px;
+        text-align: center;
+        width: 100%;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 100px; }
+
+.page-title-container.home {
+  background-image: url("../../Client/img/Page Titles/home.jpg");
+  background-position: center center; }
+
+.page-title-container.consoles {
+  background-image: url("../../Client/img/Page Titles/consoles.png");
+  background-position: left bottom; }
+
+.page-title-container.contact {
+  background-image: url("../../Client/img/Page Titles/contact.jpg");
+  background-position: left bottom; }
+
+.page-title-container.bug {
+  background-image: url("../../Client/img/Page Titles/bug.png");
+  background-position: center center; }
+
+.page-title-container.GameBoy {
+  background-image: url("../../Client/img/Page Titles/gameboy.png");
+  background-position: left bottom; }
+
+.page-title-container.nes {
+  background-image: url("../../Client/img/Page Titles/nes.png");
+  background-position: left bottom; }
+
+.skill-container {
+  display: inline-block;
+  padding: 10px; }
+  .skill-container .skill {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #e8e3dd;
+    background-color: #f7f7f7; }
+    .skill-container .skill img {
+      width: 100%; }
+    .skill-container .skill:hover .slider {
+      transition: .5s;
+      left: 0; }
+    .skill-container .skill .slider {
+      position: absolute;
+      left: -100%;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      transition: .5s;
+      background-color: rgba(255, 255, 255, 0.9); }
+      .skill-container .skill .slider p {
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+        text-align: center; }
+
+.skill.white {
+  background-color: white; }
+
+#middle-content {
+  position: relative;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-height: calc(100vh - 171.66px);
+  padding: 0px;
+  background-color: #f7f7f7;
+  transition: top 2s ease-out; }
+
+#emulator-middle-content {
+  position: absolute;
+  top: 92.5px;
+  height: calc(100vh - 171.66px);
+  padding: 0px;
+  background-color: black; }
+
+#middle-content-container {
+  background-color: #f7f7f7;
+  min-height: calc(100vh - 171.66px);
+  width: 100%;
+  overflow: hidden;
+  padding: 0px;
+  padding-bottom: 20px; }
+
+#screen-container {
+  height: 100%; }
+
+#screen {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%); }
+
+#name {
+  margin-top: 25px;
+  margin-bottom: 25px;
+  float: left; }
+  #name a {
+    font-size: 30px;
+    font-weight: 800;
+    color: #f7f7f7;
+    font-family: 'Roboto Slab', serif;
+    text-decoration: none; }
+
+.pic-container img {
+  width: 100%; }
+
+.project {
+  position: relative;
+  top: 0px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  background-color: inherit;
+  margin-bottom: 30px; }
+  .project h1, .project h2 {
+    color: #23527b; }
+  .project h1 {
+    font-size: 30px;
+    font-family: 'Montserrat', sans-serif; }
+  .project h2 {
+    font-size: 17px;
+    font-family: 'Montserrat', sans-serif; }
+  .project p {
+    font-size: 15px;
+    font-family: 'Source Sans Pro', sans-serif; }
+  .project:hover h1, .project:hover h2 {
+    color: #23527b; }
+
+.projects-inner-container {
+  padding-top: 30px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center; }
+
+.projects-inner-container.col-centered div {
+  display: inline-block;
+  float: none; }
+
+.outer-container.grey {
+  background-color: #f7f7f7; }
+
+.feature-list ul {
+  padding-top: 20px;
+  padding-bottom: 10px;
+  text-align: left; }
+
+.project-container {
+  margin-left: auto;
+  margin-right: auto;
+  transition: all .1s ease-in-out;
+  background-color: #FFFFFF;
+  width: 90%;
+  border: 2px solid #e8e3dd; }
+  .project-container .project-description {
+    height: 65px; }
+    .project-container .project-description p {
+      position: relative;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #222222; }
+      .project-container .project-description p:hover {
+        text-decoration: none; }
+  .project-container img {
+    width: 100%; }
+  .project-container p, .project-container h1, .project-container h2 {
+    margin-left: 20px;
+    margin-right: 20px; }
+  .project-container h2 {
+    margin-top: 0px; }
+  .project-container h1 {
+    margin-bottom: 0px; }
+  .project-container:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3); }
+    .project-container:hover img.nes {
+      content: url("../../Client/img/SMB3.gif"); }
+    .project-container:hover img.gb {
+      content: url("../../Client/img/Zelda.gif"); }
+  .project-container a:hover {
+    text-decoration: none; }
+
+.feature-list-container {
+  margin-left: auto;
+  margin-right: auto;
+  background-color: #FFFFFF;
+  width: 90%;
+  border: 2px solid #e8e3dd; }
+  .feature-list-container p, .feature-list-container h1, .feature-list-container h2 {
+    margin-left: 20px;
+    margin-right: 20px; }
+  .feature-list-container h2 {
+    margin-top: 0px; }
+  .feature-list-container h1 {
+    margin-bottom: 0px; }
+
+input.input-field {
+  width: 90%;
+  background-color: #FFF;
+  border: 1px solid #222222;
+  border-radius: 5px; }
+
+input.message {
+  line-height: 10em; }
+
+#romFileInput {
+  max-width: 150px; }

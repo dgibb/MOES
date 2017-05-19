@@ -1,0 +1,37 @@
+{
+  "name": "moes",
+  "version": "1.0.0",
+  "description": "multiplayer online emulator suite",
+  "main": "app.js",
+  "dependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^6.4.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "bootstrap-without-jquery": "^1.0.5",
+    "grunt": "^1.0.1",
+    "history": "^1.17.0",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
+    "react-router": "^4.0.0",
+    "react-router-dom": "^4.1.1",
+    "webpack": "^2.4.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "node-sass": "^4.5.2",
+    "webpack-dev-server": "^2.4.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel": "babel",
+    "webpack": "webpack",
+    "build-css": "node-sass --include-path scss Client/css/scss.scss Client/css/css.css",
+    "build-m-css": "node-sass --include-path scss Client/css/m.scss.scss Client/css/m.css.css",
+    "http-server": "lr-http-server",
+    "grunt": " grunt uglify",
+    "wds": "webpack-dev-server"
+  },
+  "author": "David Gibb",
+  "license": "GPL-3.0"
+}
