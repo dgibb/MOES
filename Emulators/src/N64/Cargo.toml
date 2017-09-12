@@ -1,0 +1,9 @@
+[package]
+name = "NintenRust64"
+version = "0.1.0"
+authors = ["David Gibb <dgibb802@gmail.com>"]
+
+[dependencies]
+libc = "0.2.2"
+nickel = "*"
+hyper = "*"
