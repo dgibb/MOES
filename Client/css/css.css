@@ -302,6 +302,10 @@ html, body, #app, #react-root, .content {
       content: url("../../Client/img/SMB3.gif"); }
     .project-container:hover img.gb {
       content: url("../../Client/img/Zelda.gif"); }
+    .project-container:hover img.gba {
+      content: url("../../Client/img/pokemon.gif"); }
+    .project-container:hover img.n64 {
+      content: url("../../Client/img/mariokart.gif"); }
   .project-container a:hover {
     text-decoration: none; }
 

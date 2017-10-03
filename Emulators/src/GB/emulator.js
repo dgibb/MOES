@@ -1,8 +1,4 @@
-import { memory } from './memory';
-import { cpu } from './cpu';
-import { display } from './display';
-
-export var emulator ={
+var emulator ={
 
 init: function(){
 	memory.memoryInit();

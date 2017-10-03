@@ -1,10 +1,4 @@
-//David Gibb
-import { memory, MEMORY } from './memory';
-import {tileSet0, tileSet1, tileMap0, tileMap1, display, spriteData, objPalettes, paletteRef} from './display';
-import { timer } from './timer';
-import { input } from './input'
-
-export var MBC1={
+var MBC1={
 
 mbcr1:0,
 mbcr2:1,
@@ -363,5 +357,5 @@ init: function(byteArray){
 
 };
 
-export var romBanks=[[[0]],[[0]],[[0]],[[0]]];
-export var ramBanks=[[0],[0],[0],[0]];
+var romBanks=[[[0]],[[0]],[[0]],[[0]]];
+var ramBanks=[[0],[0],[0],[0]];

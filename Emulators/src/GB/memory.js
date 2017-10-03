@@ -1,11 +1,4 @@
-//David Gibb
-
-import { MBC0 } from './MBC0';
-import { MBC1, romBanks, ramBanks } from './MBC1';
-import { emulator } from './emulator';
-import { cpu } from './cpu'
-
-export var memory = {
+var memory = {
 
 mbc:0,
 memdebug:0,
@@ -195,4 +188,4 @@ showStack: function(){
 
 };
 
-export var MEMORY=[];
+var MEMORY=[];

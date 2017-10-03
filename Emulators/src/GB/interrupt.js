@@ -1,10 +1,4 @@
-//David Gibb
-import { memory, MEMORY } from './memory';
-import { cpu } from './cpu';
-import { display } from './display';
-import { timer } from './timer'
-
-export var interrupt={
+var interrupt={
 
 step: function(addr){
 

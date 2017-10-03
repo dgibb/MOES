@@ -1,8 +1,4 @@
-//David Gibb
-import {cpu} from "./cpu"
-import {memory, MEMORY} from "./memory"
-
-export var display = {
+var display = {
 
 mode:2,
 tCount:0,
@@ -492,12 +488,12 @@ pixOnScreen: function(bgLine, spriteline){
 
 };
 
-export var tileMap0=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
-export var tileMap1=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
-export var screen={};
-export var pixData={};
-export var spriteData=[];
-export var tileSet0=[];
-export var tileSet1=[];
-export var paletteRef=[255,192,96,0];
-export var objPalettes=[[],[]];
+var tileMap0=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+var tileMap1=[[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+var screen={};
+var pixData={};
+var spriteData=[];
+var tileSet0=[];
+var tileSet1=[];
+var paletteRef=[255,192,96,0];
+var objPalettes=[[],[]];

@@ -1,10 +1,4 @@
-//David Gibb
-import { memory, MEMORY } from './memory';
-import {tileSet0, tileSet1, tileMap0, tileMap1, display, spriteData, objPalettes, paletteRef} from './display';
-import { timer } from './timer';
-import { input } from './input'
-
-export var MBC0={
+var MBC0={
 
 readByte: function(addr){
 

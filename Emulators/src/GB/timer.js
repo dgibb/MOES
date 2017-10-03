@@ -1,9 +1,4 @@
-//David Gibb
-import { MEMORY } from './memory';
-import { cpu } from './cpu';
-
-
-export var timer={
+var timer={
 
 divCnt:0,
 timaCnt:0,
@@ -34,5 +29,3 @@ step: function(){
 
 },
 };
-
-exports={timer}

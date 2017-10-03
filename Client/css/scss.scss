@@ -387,11 +387,17 @@ transform: translateX(-50%);
     transform:scale(1.05);
     box-shadow: 0px 0px 10px rgba(0,0,0,.3);
     img.nes{
-    content:url("../../Client/img/SMB3.gif");
+      content:url("../../Client/img/SMB3.gif");
     }
-  img.gb{
-  content:url("../../Client/img/Zelda.gif");
-  }
+    img.gb{
+      content:url("../../Client/img/Zelda.gif");
+    }
+    img.gba{
+      content:url("../../Client/img/pokemon.gif");
+    }
+    img.n64{
+      content:url("../../Client/img/mariokart.gif");
+    }
   }
   a{
     &:hover{

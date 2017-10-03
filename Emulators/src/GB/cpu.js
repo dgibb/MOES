@@ -1,10 +1,4 @@
-//David Gibb
-import { memory, MEMORY } from './memory';
-import { display } from './display';
-import { timer } from './timer';
-import { interrupt } from './interrupt';
-
-export var cpu = {
+var cpu = {
 
  timer:0,
 
@@ -190,7 +184,7 @@ export var cpu = {
 
 //0x10
  stop : function(){
-	window.clearInterval(cpu.timer);
+	console.log('stop opcode hit')
 	cpu.m=2; cpu.t=4;
 	cpu.pc+=1;
 },
@@ -5320,5 +5314,3 @@ var	twoByteInstructions = [
 	cpu.set_7_l,
 	cpu.set_7_hl,
 	cpu.set_7_a,];
-
-  exports = {cpu, oneByteInstructions, twoByteInstructions};

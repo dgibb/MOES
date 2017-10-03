@@ -1,8 +1,4 @@
-//David Gibb
-import { MEMORY } from './memory';
-
-
-export var input={
+var input={
 
 keys:[0xFF,0xFF],
 
