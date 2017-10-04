@@ -6,6 +6,9 @@ html, body, #app, #react-root, .content {
   min-height: 100vh;
   width: 100%; }
 
+.row {
+  margin: 0px; }
+
 .button-container {
   padding-top: 30px;
   text-align: center; }
@@ -148,6 +151,10 @@ html, body, #app, #react-root, .content {
   background-image: url("../../Client/img/Page Titles/gameboy.png");
   background-position: left bottom; }
 
+.page-title-container.N64 {
+  background-image: url("../../Client/img/Page Titles/n64.png");
+  background-position: center center; }
+
 .page-title-container.nes {
   background-image: url("../../Client/img/Page Titles/nes.png");
   background-position: left bottom; }
@@ -179,7 +186,7 @@ html, body, #app, #react-root, .content {
         transform: translateY(-50%);
         text-align: center; }
 
-.skill.white {
+#middle-content.white {
   background-color: white; }
 
 #middle-content {
