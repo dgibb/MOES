@@ -6,6 +6,9 @@ html, body, #app, #react-root, .content {
   min-height: 100vh;
   width: 100%; }
 
+.row {
+  margin: 0px; }
+
 .button-container {
   padding-top: 30px;
   text-align: center; }
@@ -158,6 +161,10 @@ html, body, #app, #react-root, .content {
 .page-title-container.GameBoy {
   background-image: url("../../Client/img/Page Titles/gameboy.png");
   background-position: left bottom; }
+
+.page-title-container.N64 {
+  background-image: url("../../Client/img/Page Titles/n64.png");
+  background-position: center center; }
 
 .page-title-container.nes {
   background-image: url("../../Client/img/Page Titles/nes.png");
@@ -323,14 +330,17 @@ html, body, #app, #react-root, .content {
   .feature-list-container h1 {
     margin-bottom: 0px; }
 
-input.input-field {
-  width: 100%;
+.input-field {
+  width: 95%;
   background-color: #FFF;
-  border: 1px solid #222222;
-  border-radius: 5px; }
+  border: 2px solid #e8e3dd; }
 
-input.message {
-  line-height: 10em; }
+.message {
+  resize: none;
+  transform: translateY(50%); }
 
 #romFileInput {
   max-width: 150px; }
+
+.no-upper-padding {
+  padding-top: 0px; }

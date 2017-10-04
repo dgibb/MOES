@@ -330,14 +330,14 @@ html, body, #app, #react-root, .content {
   .feature-list-container h1 {
     margin-bottom: 0px; }
 
-input.input-field {
-  width: 90%;
+.input-field {
+  width: 95%;
   background-color: #FFF;
-  border: 1px solid #222222;
-  border-radius: 5px; }
+  border: 2px solid #e8e3dd; }
 
-input.message {
-  line-height: 10em; }
+.message {
+  resize: none;
+  transform: translateY(50%); }
 
 #romFileInput {
   max-width: 150px; }

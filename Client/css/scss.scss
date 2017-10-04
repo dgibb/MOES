@@ -430,15 +430,15 @@ transform: translateX(-50%);
   }
 }
 
-input.input-field{
-  width:90%;
+.input-field{
+  width:95%;
   background-color: #FFF;
-  border:1px solid $darkGrey1;
-  border-radius: 5px;
+  border:2px solid $lightGrey2;
 }
 
-input.message{
-  line-height:10em;
+.message{
+  resize:none;
+  transform:translateY(50%);
 }
 
 #romFileInput{
