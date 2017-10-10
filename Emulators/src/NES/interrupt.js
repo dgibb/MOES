@@ -1,6 +1,4 @@
-import {memory} from "./memory"
-
-export var interrupt={
+var interrupt={
 
   step:function(){
     memory.mapper.irqStep();

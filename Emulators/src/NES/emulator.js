@@ -1,17 +1,11 @@
 //David Gibb
+var emulator= {
 
-import {cpu} from "./cpu";
-import {ppu, chrRom} from "./gpu"
-import {memory, prgRom} from "./memory"
-import {mapperInit} from './mappers'
-
-export var emulator= {
+	pRAM:'no',
 
 runGame:function(){
-	var about = document.getElementById('middle-content');
-	about.style.display="none";
-	cpu.reset();
 	cpu.timer = window.setInterval(emulator.runFrame,17); //check framerate
+	emulator.state='running';
 },
 
 runFrame: function(){
@@ -41,25 +35,23 @@ loadROM: function(){
 			emulator.iNESHandler(romFile);
 		} else{
 			alert("File Not Supported");
-			//prgRom=romFile;
+			prgRom=romFile;
 			header=prgRom.slice(0,16);
 			console.log(header)
 			for(var i=1; i<16;i++){
 				console.log(romFile[i].toString(16));
 			}
-			return;
 		}
 
-		var mc = document.getElementById('middle-content');
-		var footer = document.getElementById('footer');
-		footer.style.position="fixed";
-		footer.style.bottom=0;
-		var height= "-"+mc.clientHeight.toString()+"px"
-		mc.style.top=height;
-
-		mc.addEventListener("transitionend", emulator.runGame);
+		cpu.reset();
+		emulator.runGame();
 
 		}
+	input.style.display = "none";
+	var loadROM = document.getElementById('load-ROM');
+	loadROM.style.display = "none";
+	var resetButton = document.getElementById('reset-button');
+	resetButton.style.display = "block";
 	reader.readAsArrayBuffer(file);
 	}
 },

@@ -1,11 +1,6 @@
 //David Gibb
-import {mapper0, mapper1, mapper4} from './mappers'
-import {ppu} from './gpu'
-import {apu} from './apu'
-import {wRAM} from './cpu'
 
-
-export var memory={
+var memory={
 
 mapper:0,
 irqVector:0xFFFE,
@@ -136,4 +131,4 @@ printStack:function(){
 
 };
 
-export var prgRom=[];
+prgRom=[];

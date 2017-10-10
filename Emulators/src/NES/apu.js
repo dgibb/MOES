@@ -1,7 +1,6 @@
 //David Gibb
-import {input} from './input';
 
-export var apu={
+var apu={
 
   joypad1:0,  //0x4016 (write/set strobe)
   joypad2:0,  //0x4017 (write/set strobe)

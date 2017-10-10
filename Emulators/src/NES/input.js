@@ -1,6 +1,4 @@
-import {apu} from './apu'
-
-export var input={
+input={
 
 shiftRegisters1:[0,0,0,0,0,0,0,0],    //player1
 strobe1:0,

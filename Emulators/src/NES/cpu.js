@@ -1,11 +1,6 @@
 //David Gibb
 
-import {memory} from "./memory";
-import {ppu} from "./gpu";
-import {input} from "./input";
-import {debug} from './debug tools'
-
-export var cpu={
+var cpu={
 
  a:0,
  x:0,
@@ -770,7 +765,7 @@ ALR_IMM:function(){
 
 //0x4C
 JMP_A: function(){
-	var addr=memory.readWord(cpu.pc+1);
+	addr=memory.readWord(cpu.pc+1);
 	cpu.pc=addr;
 	cpu.clk=3;
 },
@@ -2706,18 +2701,16 @@ ex:function(opcode){
 	cpu.pcPrev=cpu.pc;
 	instructionMap[opcode]();
 	cpu.cycle+=cpu.clk;
-
-  for(var i=0; i<3*cpu.clk;i++){
+	for(var i=0; i<3*cpu.clk;i++){
 		ppu.step();
     if (memory.mapper.interrupts){memory.mapper.step();}
     ppu.spriteEval();
 	}
-
   input.step();
-
   if (ppu.vblDelay){ppu.vblDelay=0;ppu.nmiEnable=1;}
-  if(ppu.queuedIntCycles){ppu.runIntCycles();}
-
+  if(ppu.queuedIntCycles){
+    ppu.runIntCycles();
+  }
 },
 
 reset:function(){
@@ -2805,9 +2798,9 @@ wRamInit(){
 
 };
 
-export var wRAM=[];
+wRAM=[];
 
-export var instructionMap=[
+instructionMap=[
 cpu.BRK,//0x00;
 cpu.ORA_IX,
 cpu.HLT,

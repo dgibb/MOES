@@ -1,10 +1,6 @@
 //David Gibb
 
-import {cpu} from './cpu'
-import {memory, prgRom} from './memory'
-import {ppu, chrRom} from './gpu'
-
-export var mapper0={
+var mapper0={
 
  unused:0,
  interrupts:0,
@@ -147,7 +143,7 @@ export var mapper0={
 
   init:function(){
     if (prgRom.length===0x4000){
-      //prgRom=prgRom.concat(prgRom);
+      prgRom=prgRom.concat(prgRom);
     }else if(prgRom.length>0x8000){
       console.log('Mapper0.init; ROM too big');
     }
@@ -161,7 +157,7 @@ export var mapper0={
 
 };
 
-export var mapper1={
+var mapper1={
 
   romBankMode:0,
   chrBankMode:0,
@@ -443,7 +439,7 @@ export var mapper1={
 
 };
 
-export var mapper4={
+var mapper4={
 
   prgRam:[],
 
@@ -952,9 +948,9 @@ export var mapper4={
 
 };
 
-export var mapperInit = function(mapper){
+var mapperInit = function(mapper){
   memory.mapper=mapperMap[mapper];
   memory.mapper.init();
 };
 
-var mapperMap=[mapper0,mapper1,0,0,mapper4];
+mapperMap=[mapper0,mapper1,0,0,mapper4];

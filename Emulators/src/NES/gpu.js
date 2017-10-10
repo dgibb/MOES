@@ -1,9 +1,6 @@
 //David Gibb
 
-import {cpu} from "./cpu"
-import {memory} from "./memory"
-
-export var ppu={
+var ppu={
 
 registers:[0,0,0],
 
@@ -348,25 +345,21 @@ step:function(){
 					break;
 				}
 			}
-if(ppu.bgEnable){
-			if (ppu.cycle+ppu.evenOddToggle===340){
+
+			if (ppu.cycle===340){
 				ppu.scanlineMode=0;
 				ppu.cycleMode=0
 				ppu.cycle=-1;
 				ppu.scanline=(ppu.scanline+1)%262;
+        if(ppu.evenOddToggle){
+          ppu.cycleMode=1;
+          ppu.cycle++;
+        }
         ppu.evenOddToggle=(ppu.evenOddToggle+1)&0x01;
 			}
-    }else{
-      if (ppu.cycle===340){
-				ppu.scanlineMode=0;
-				ppu.cycleMode=0
-				ppu.cycle=-1;
-				ppu.scanline=(ppu.scanline+1)%262;
-        ppu.evenOddToggle=(ppu.evenOddToggle+1)&0x01;
-			}
-    }
 		break;
 	}
+
 		ppu.cycle++;
 },
 
@@ -378,6 +371,7 @@ fetchNTByte:function(){					//actually fetches patternTable address;
 	ppu.nametableByte=ppu.readVRam(address);//nametable Byte
   ppu.ntByteBuffer[0]=ppu.nametableByte;
   ppu.ntByteBufHelper[0]=ppu.cycle
+//  if (ppu.graphicsDebug&&ppu.cycle===321){console.log('ppu.fetchNTByte: nt=', ((ppu.v>>10)&0x03));}
 	ppu.nametableByte=(ppu.nametableByte<<4)+ppu.patternTableOffset+(ppu.v>>12);//tile pattern address
 },
 
@@ -689,7 +683,7 @@ readByte: function(addr){
 			var val=ppu.registers[2];
 			ppu.registers[2]&=0x7F;
 			ppu.writeToggle=0;
-      if(ppu.scanline===241&&ppu.cycle===1){ppu.nmiSuppress=1; console.log('nmi-supress')}
+      //if(ppu.scanline===241&&ppu.cycle===1){ppu.nmiSuppress=1; console.log('nmi-supress')}
       return val;
     break;
 
@@ -748,7 +742,7 @@ writeByte: function(addr, data){
 		break;
 
 		case 2:
-      //ppu.registers[2]=data;
+      ppu.registers[2]=data;
 		break;
 
 		case 3:
@@ -765,24 +759,30 @@ writeByte: function(addr, data){
         ppu.t&=0xFFE0;
 		    ppu.t|=data>>3;
         ppu.writeToggle=1;
+      //  console.log('ppu.setScroll1: nametable is', ((ppu.t>>10)&0x3),ppu.scanline, ppu.cycle);
 		  }else{
         ppu.t&=0x0C1F;
 			  ppu.t|=((data&0x07)<<12);
 			  ppu.t|=((data&0xF8)<<2);
         ppu.writeToggle=0;
+      //  console.log('ppu.setScroll2: nametable is', ((ppu.t>>10)&0x3),ppu.scanline, ppu.cycle);
 		  }
 		break;
 
 		case 6:
 		 if(!ppu.writeToggle){
+    //   console.log('ppu.setvRamAddr1: nametable is', ((ppu.t>>10)&0x3),ppu.scanline, ppu.cycle);
 			 ppu.t&=0x00FF;
        ppu.t|=((data&0x3F)<<8);
        ppu.writeToggle=1;
+    //   console.log('ppu.setvRamAddr1: nametable is', ((ppu.t>>10)&0x3),ppu.scanline, ppu.cycle);
 		 }else{
+    //   console.log('ppu.setvRamAddr2: nametable is', ((ppu.t>>10)&0x3),ppu.scanline, ppu.cycle);
        ppu.t&=0xFF00;
        ppu.t|=data;
        ppu.v=ppu.t;
        ppu.writeToggle=0;
+    //   console.log('ppu.setvRamAddr2: nametable is', ((ppu.t>>10)&0x3),ppu.scanline, ppu.cycle);
 		 }
        ppu.a12=1;
 		break;
@@ -986,24 +986,11 @@ showState:function(){
 
 canvasInit: function(){
 	var canvas = document.getElementById('screen');
-	var container = document.getElementById('screen-container')
-	var height=container.clientHeight;
-	var width=container.clientWidth;
-	console.log(height, width);
-	if (width>=height){
-		canvas.style.height="100%";
-	}else{
-		canvas.style.width="100%";
-	}
 	screen = canvas.getContext('2d');
 	pixData = screen.createImageData(256,240);
-	for(var i=0;i<pixData.data.length;i+=4){
-		pixData.data[i]=0;
-		pixData.data[i+1]=0;
-		pixData.data[i+2]=0;
-		pixData.data[i+3]=255;
+	for(var i=0;i<pixData.data.length;i++){
+		pixData.data[i]=255;
 	}
-	screen.imageSmoothingEnabled= false
 	screen.putImageData(pixData,0,0);
 },
 
@@ -1095,17 +1082,15 @@ customPPUTest:function(){
 
 };
 
-export var chrRom=[];
-export var nameTable=[[],[],[],[]];
-export var bgPal=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-export var spritePal=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-export var oam=[];
-export var oamBuf=[];
-export var oamBufPrev=[];
-export var pixData=[];
+var chrRom=[];
+var nameTable=[[],[],[],[]];
+var bgPal=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+var spritePal=[[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+var oam=[];
+var oamBuf=[];
 
 //pallete credit to NES Hacker http://www.thealmightyguru.com/Games/Hacking/Wiki/index.php/NES_Palette
-export var palette=[
+palette=[
 [124,124,124],
 [0,0,252],
 [0,0,188],

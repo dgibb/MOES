@@ -1,4 +1,4 @@
-export var debug ={
+debug ={
 
 callStack:[['reset',0]],
 
