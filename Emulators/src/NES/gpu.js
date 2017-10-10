@@ -985,11 +985,23 @@ showState:function(){
 },
 
 canvasInit: function(){
-	var canvas = document.getElementById('screen');
-	screen = canvas.getContext('2d');
-	pixData = screen.createImageData(256,240);
-	for(var i=0;i<pixData.data.length;i++){
-		pixData.data[i]=255;
+  var canvas = document.getElementById('screen');
+  var container = document.getElementById('screen-container')
+  var height=container.clientHeight;
+  var width=container.clientWidth;
+  console.log(height, width);
+  if (width>=height){
+    canvas.style.height="100%";
+  }else{
+    canvas.style.width="100%";
+    }
+  screen = canvas.getContext('2d');
+  pixData = screen.createImageData(256,240);
+  for(var i=0;i<pixData.data.length;i+=4){
+      pixData.data[i]=0;
+      pixData.data[i+1]=0;
+      pixData.data[i+2]=0;
+      pixData.data[i+3]=255;
 	}
 	screen.putImageData(pixData,0,0);
 },
