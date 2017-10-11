@@ -50,7 +50,7 @@ loadROM: function(){
     footer.style.bottom=0;
     var height= "-"+mc.clientHeight.toString()+"px"
     mc.style.top=height;
-    mc.addEventListener("transitionend", emulator.runGame);
+    emulator.runGame();
     }
   reader.readAsArrayBuffer(file);
   }
@@ -93,7 +93,7 @@ for (var i=0;i<chrRomSize;i++){
 
 if (x!=romFile.length){
   console.log('romFile!=x');
-  console.log(romfile.length,'-', x,'=', romFile.length-x);
+  console.log(romFile.length,'-', x,'=', romFile.length-x);
 } else{
   console.log('loading ROM miraculously Succeeded');
 }
