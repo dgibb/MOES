@@ -1,5 +1,4 @@
-var interrupt={
-
+var interrupt = {
   step:function(){
     memory.mapper.irqStep();
   },
