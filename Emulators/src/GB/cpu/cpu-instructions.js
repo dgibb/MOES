@@ -3591,7 +3591,6 @@ var instructions ={};
     var value=memory.readByte(cpu.hl());
     value|=0x40;
     memory.writeByte(value, cpu.hl());
-    cpu.m=2; cpu.t=16;
   },
 
   //0xF7
@@ -3650,3 +3649,5 @@ var instructions ={};
 
   },
 };
+
+module.exports = { instructions: instructions };

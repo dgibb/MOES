@@ -5,8 +5,7 @@ var Input = require('./input.js')
 var Timer = require('./timer.js')
 var Interrupt = require('./interrupt')
 
-function emulator () {
-
+function Emulator () {
   this.cpu = new CPU()
   this.cpu = new MMU()
   this.display = new Display()
@@ -87,4 +86,4 @@ function emulator () {
   }
 }
 
-module.exports = { emulator: emulator }
+module.exports = { Emulator: Emulator }

@@ -1,8 +1,7 @@
-var instructions  = require('./cpu-instructions.js');
-var maps  = require('./cpu-instructions.js');
+var instructions = require('./cpu-instructions.js')
+var maps = require('./cpu-instructions.js')
 
-function CPU() {
-
+function CPU () {
   this.registers = {
     a: 0x01,
     b: 0x00,
@@ -10,154 +9,107 @@ function CPU() {
     d: 0x00,
     e: 0xD8,
     h: 0x01,
-    l: 0x,
-    f: 0, // flags
-  };
+    l: 0x00,
+    f: 0 // flags
+  }
 
-  this.instructions = instructions;
-  this.maps = maps;
+  this.instructions = instructions
+  this.maps = maps
 
-  this.timer = 0;
-  this.pc = 0x100;
-  this.pcPrev = 0;
-  this.sp = 0xffe;
-  this.m = 0;
-  this.t = 0;
-  this.ime = 0;
+  this.timer = 0
+  this.pc = 0x100
+  this.pcPrev = 0
+  this.sp = 0xffe
+  this.m = 0
+  this.t = 0
+  this.ime = 0
 
-  //-----------------//
-  //----- FLAGS -----//
-  //-----------------//
-
+  // ----------------- //
+  // ----- FLAGS ----- //
+  // ----------------- //
 
   this.zeroFlag = function () {
-    return this.registers.f & 0x80;
-  };
-
-  this.setZeroFlag = function () {
-    this.registers.f |= 0x80;
-  };
-
-  this.resetZeroFlag = function () {
-    this.registers.f &= 0x70;
-  };
+    return this.registers.f & 0x80
+  }
 
   this.subFlag = function () {
-    return this.registers.f & 0x40;
-  };
-
-  this.setSubFlag = function () {
-    this.registers.f |= 0x40;
-  };
-
-  this.resetSubFlag = function () {
-    this.registers.f &= 0xB0;
-  };
+    return this.registers.f & 0x40
+  }
 
   this.halfFlag = function () {
-    return this.registers.f & 0x20;
-  };
-
-  this.setHalfFlag = function () {
-    this.registers.f |= 0x20;
-  };
-
-  this.resetHalfFlag = function () {
-    this.registers.f &= 0xD0;
-  };
+    return this.registers.f & 0x20
+  }
 
   this.carryFlag = function () {
-    return this.registers.f & 0x10;
-  };
-
-  this.setCarryFlag = function () {
-    this.registers.f |= 0x10;
-  };
-
-  this.resetCarryFlag = function () {
-    this.registers.f &= 0xE0;
-  };
-
-  this.interruptEnabled = function () {
-    return this.ime != 0;
-  };
+    return this.registers.f & 0x10
+  }
 
   this.setFlags = function (flags) {
     if (flags.carry !== null) {
-      if (flags.carry) {
-        this.setCarryFlag();
-      } else {
-        this.resetCarryFlag();}
+      this.registers.f = (flags.carry) ? this.registers.f | 0x10 : this.registers.f &= 0xE0
     }
 
     if (flags.zero !== null) {
-      if (flags.carry) {
-        this.setZeroFlag();
-      } else {
-        this.resetZeroFlag();
-      }
+      this.registers.f = (flags.zero) ? this.registers.f | 0x80 : this.registers.f &= 0x70
     }
 
     if (flags.sub !== null) {
-      if (flags.carry) {
-        this.setSubFlag();
-      } else {
-        this.resetSubFlag();
-      }
+      this.registers.f = (flags.sub) ? this.registers.f | 0x40 : this.registers.f &= 0xB0
     }
 
     if (flags.half !== null) {
-      if (flags.carry) {
-        this.setHalfFlag();
-      } else {
-        this.resetHalfFlag();
-      }
+      this.registers.f = (flags.half) ? this.registers.f | 0x20 : this.registers.f &= 0xD0
     }
-  };
+  }
 
-  //-------------------//
-  //----- execute -----//
-  //-------------------//
+  this.interruptEnabled = function () {
+    return this.ime !== 0
+  }
+
+  // ------------------- //
+  // ----- execute ----- //
+  // ------------------- //
 
   this.ex = function (opcode) {
-    this.pcPrev = this.pc;
-    this.maps.instructions[opcode]();
-    this.pc += this.maps.instruction_lengths[opcode];
-    this.pc &= 0xFFFF;
-    display.step();
-    timer.step(opcode);
-    interrupt.step();
-  };
+    this.pcPrev = this.pc
+    this.maps.instructions[opcode]()
+    this.pc += this.maps.instruction_lengths[opcode]
+    this.pc &= 0xFFFF
+    display.step()
+    timer.step(opcode)
+    interrupt.step()
+  }
 
-  //-------------------//
-  //----- Helpers -----//
-  //-------------------//
+  // ------------------- //
+  // ----- Helpers ----- //
+  // ------------------- //
 
-  this.getAddr = function (a, b) { //finds and returns combined address of two 8bit registers
-    var addr = a;
-    addr = addr << 8;
-    addr |= b;
-    return addr;
-  };
+  // finds and returns 16bit address of two 8bit registers
+  this.getAddr = function (a, b) {
+    var addr = a
+    addr = addr << 8
+    addr |= b
+    return addr
+  }
 
   this.signDecode = function (val) {
-    var neg = val & 0x80;
+    var neg = val & 0x80
     if (neg) {
-      val = ~val & 0xFF;
-      val++;
-      val = -val;
+      val = ~val & 0xFF
+      val++
+      val = -val
     }
 
-    return val;
-  };
+    return val
+  }
 
   this.hl = function () {
-    return this.getAddr(this.registers.h, this.registers.l);
-  };
+    return this.getAddr(this.registers.h, this.registers.l)
+  }
 
-  //-----------------//
-  //----- debug -----//
-  //-----------------//
+  // ----------------- //
+  // ----- debug ----- //
+  // ----------------- //
 
   this.printStack = function () {
     console.log('STACK:')
@@ -169,43 +121,46 @@ function CPU() {
   }
 
   this.runInstruction = function () {
-    this.showFunc();
-    this.ex(mmu.readByte(this.pc));
-    this.showState();
-    display.showState();
-  };
+    this.showFunc()
+    this.ex(mmu.readByte(this.pc))
+    this.showState()
+    display.showState()
+  }
 
   this.showFunc = function () {
-    console.log('executing: MEMORY[', (this.pc).toString(16), '], ', oneByteInstructions[mmu.readByte(this.pc)].name, ', hex ', mmu.readByte(this.pc).toString(16));
-  };
+    var pc = (this.pc).toString(16);
+    var instructionName = this.maps.instructions[mmu.readByte(this.pc)].name
+    var instructionHex = mmu.readByte(this.pc).toString(16)
+    console.log('executing: MEMORY[', pc, '], ', instructionName, ', hex ', instructionHex)
+  }
 
   this.showState = function () {
-    console.log('current state: ');
-    console.log('AF: ', this.toHex(this.a), this.toHex(this.registers.f));
-    console.log('BC: ', this.toHex(this.b), this.toHex(this.c));
-    console.log('DE: ', this.toHex(this.d), this.toHex(this.e));
-    console.log('HL: ', this.toHex(this.h), this.toHex(this.l));
-    console.log('sp: ', this.sp.toString(16));
-    console.log('pc: ', this.pc.toString(16));
-    console.log('m: ', this.m);
-    console.log('t: ', this.t);
-    console.log('divCnt: ', this.toHex(timer.divCnt));
-    console.log('DIV(FF04):', this.toHex(MEMORY[0xFF04]));
-    console.log('timaCnt: ', this.toHex(timer.timaCnt));
-    console.log('TIMA(FF05):', this.toHex(MEMORY[0xFF05]));
-    console.log('TMA(FF06):', this.toHex(MEMORY[0xFF06]));
-    console.log('TAC(FF07):', this.toHex(MEMORY[0xFF07]));
-    console.log('IF:', this.toHex(MEMORY[0xFF0F]));
-    console.log('IE:', this.toHex(MEMORY[0xFFFF]));
-  },
+    console.log('current state: ')
+    console.log('AF: ', this.toHex(this.a), this.toHex(this.registers.f))
+    console.log('BC: ', this.toHex(this.b), this.toHex(this.c))
+    console.log('DE: ', this.toHex(this.d), this.toHex(this.e))
+    console.log('HL: ', this.toHex(this.h), this.toHex(this.l))
+    console.log('sp: ', this.sp.toString(16))
+    console.log('pc: ', this.pc.toString(16))
+    console.log('m: ', this.m)
+    console.log('t: ', this.t)
+    console.log('divCnt: ', this.toHex(timer.divCnt))
+    console.log('DIV(FF04):', this.toHex(MEMORY[0xFF04]))
+    console.log('timaCnt: ', this.toHex(timer.timaCnt))
+    console.log('TIMA(FF05):', this.toHex(MEMORY[0xFF05]))
+    console.log('TMA(FF06):', this.toHex(MEMORY[0xFF06]))
+    console.log('TAC(FF07):', this.toHex(MEMORY[0xFF07]))
+    console.log('IF:', this.toHex(MEMORY[0xFF0F]))
+    console.log('IE:', this.toHex(MEMORY[0xFFFF]))
+  }
 
   this.toHex = function (n) {
-    var hex = n.toString(16);
+    var hex = n.toString(16)
     while (hex.length < 2) {
-      hex = '0' + hex;
+      hex = '0' + hex
     }
-
-    return hex;
-  };
-
+    return hex
+  }
 }
+
+module.exports = { CPU: CPU }

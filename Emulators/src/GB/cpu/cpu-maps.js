@@ -1,4 +1,4 @@
-var instructions  = include('./cpu-instructions.js');
+var instructions = require('./cpu-instructions.js')
 
 var maps = {
 
@@ -17,8 +17,8 @@ var maps = {
     instructions.ret_nz, instructions.pop_bc, instructions.jp_nz_nn, instructions.jp_nn, instructions.call_nz_nn, instructions.push_bc, instructions.add_a_n, instructions.rst_0, instructions.ret_z, instructions.ret, instructions.jp_z_nn, instructions.ext_ops, instructions.call_z_nn, instructions.call_nn, instructions.adc_a_n, instructions.rst_8,
     instructions.ret_nc, instructions.pop_de, instructions.jp_nc_nn, instructions.unused, instructions.call_nc_nn, instructions.push_de, instructions.sub_a_n, instructions.rst_10, instructions.ret_c, instructions.reti, instructions.jp_c_nn, instructions.unused, instructions.call_c_nn, instructions.unused, instructions.sbc_a_n, instructions.rst_18,
     instructions.ldh_n_a, instructions.pop_hl, instructions.ldh_c_a, instructions.unused, instructions.unused, instructions.push_hl, instructions.and_n, instructions.rst_20, instructions.add_sp_d, instructions.jp_hl, instructions.ld_nn_a, instructions.unused, instructions.unused, instructions.unused, instructions.xor_n, instructions.rst_28,
-    instructions.ldh_a_n, instructions.pop_af, instructions.ldh_a_c, instructions.di, instructions.unused, instructions.push_af, instructions.or_n, instructions.rst_30, instructions.ldhl_sp_d, instructions.ld_sp_hl, instructions.ld_a_nn, instructions.ei, instructions.unused, instructions.unused, instructions.cp_n, instructions.rst_38,
-  ];
+    instructions.ldh_a_n, instructions.pop_af, instructions.ldh_a_c, instructions.di, instructions.unused, instructions.push_af, instructions.or_n, instructions.rst_30, instructions.ldhl_sp_d, instructions.ld_sp_hl, instructions.ld_a_nn, instructions.ei, instructions.unused, instructions.unused, instructions.cp_n, instructions.rst_38
+  ],
 
   prefixCB: [
     instructions.rlc_b, instructions.rlc_c, instructions.rlc_d, instructions.rlc_e, instructions.rlc_h, instructions.rlc_l, instructions.rlc_hl, instructions.rlc_a, instructions.rrc_b, instructions.rrc_c, instructions.rrc_d, instructions.rrc_e, instructions.rrc_h, instructions.rrc_l, instructions.rrc_hl, instructions.rrc_a,
@@ -29,21 +29,23 @@ var maps = {
     instructions.bit_2_b, instructions.bit_2_c, instructions.bit_2_d, instructions.bit_2_e, instructions.bit_2_h, instructions.bit_2_l, instructions.bit_2_hl, instructions.bit_2_a, instructions.bit_3_b, instructions.bit_3_c, instructions.bit_3_d, instructions.bit_3_e, instructions.bit_3_h, instructions.bit_3_l, instructions.bit_3_hl, instructions.bit_3_a,
     instructions.bit_4_b, instructions.bit_4_c, instructions.bit_4_d, instructions.bit_4_e, instructions.bit_4_h, instructions.bit_4_l, instructions.bit_4_hl, instructions.bit_4_a, instructions.bit_5_b, instructions.bit_5_c, instructions.bit_5_d, instructions.bit_5_e, instructions.bit_5_h, instructions.bit_5_l, instructions.bit_5_hl, instructions.bit_5_a,
     instructions.bit_6_b, instructions.bit_6_c, instructions.bit_6_d, instructions.bit_6_e, instructions.bit_6_h, instructions.bit_6_l, instructions.bit_6_hl, instructions.bit_6_a, instructions.bit_7_b, instructions.bit_7_c, instructions.bit_7_d, instructions.bit_7_e, instructions.bit_7_h, instructions.bit_7_l, instructions.bit_7_hl, instructions.bit_7_a,
-    instructions.res_0_b,instructions.res_0_c, instructions.res_0_d, instructions.res_0_e, instructions.res_0_h, instructions.res_0_l, instructions.res_0_hl, instructions.res_0_a, instructions.res_1_b, instructions.res_1_c, instructions.res_1_d, instructions.res_1_e, instructions.res_1_h, instructions.res_1_l, instructions.res_1_hl, instructions.res_1_a,
+    instructions.res_0_b, instructions.res_0_c, instructions.res_0_d, instructions.res_0_e, instructions.res_0_h, instructions.res_0_l, instructions.res_0_hl, instructions.res_0_a, instructions.res_1_b, instructions.res_1_c, instructions.res_1_d, instructions.res_1_e, instructions.res_1_h, instructions.res_1_l, instructions.res_1_hl, instructions.res_1_a,
     instructions.res_2_b, instructions.res_2_c, instructions.res_2_d, instructions.res_2_e, instructions.res_2_h, instructions.res_2_l, instructions.res_2_hl, instructions.res_2_a, instructions.res_3_b, instructions.res_3_c, instructions.res_3_d, instructions.res_3_e, instructions.res_3_h, instructions.res_3_l, instructions.res_3_hl, instructions.res_3_a,
     instructions.res_4_b, instructions.res_4_c, instructions.res_4_d, instructions.res_4_e, instructions.res_4_h, instructions.res_4_l, instructions.res_4_hl, instructions.res_4_a, instructions.res_5_b, instructions.res_5_c, instructions.res_5_d, instructions.res_5_e, instructions.res_5_h, instructions.res_5_l, instructions.res_5_hl, instructions.res_5_a,
     instructions.res_6_b, instructions.res_6_c, instructions.res_6_d, instructions.res_6_e, instructions.res_6_h, instructions.res_6_l, instructions.res_6_hl, instructions.res_6_a, instructions.res_7_b, instructions.res_7_c, instructions.res_7_d, instructions.res_7_e, instructions.res_7_h, instructions.res_7_l, instructions.res_7_hl, instructions.res_7_a,
     instructions.set_0_b, instructions.set_0_c, instructions.set_0_d, instructions.set_0_e, instructions.set_0_h, instructions.set_0_l, instructions.set_0_hl, instructions.set_0_a, instructions.set_1_b, instructions.set_1_c, instructions.set_1_d, instructions.set_1_e, instructions.set_1_h, instructions.set_1_l, instructions.set_1_hl, instructions.set_1_a,
     instructions.set_2_b, instructions.set_2_c, instructions.set_2_d, instructions.set_2_e, instructions.set_2_h, instructions.set_2_l, instructions.set_2_hl, instructions.set_2_a, instructions.set_3_b, instructions.set_3_c, instructions.set_3_d, instructions.set_3_e, instructions.set_3_h, instructions.set_3_l, instructions.set_3_hl, instructions.set_3_a,
     instructions.set_4_b, instructions.set_4_c, instructions.set_4_d, instructions.set_4_e, instructions.set_4_h, instructions.set_4_l, instructions.set_4_hl, instructions.set_4_a, instructions.set_5_b, instructions.set_5_c, instructions.set_5_d, instructions.set_5_e, instructions.set_5_h, instructions.set_5_l, instructions.set_5_hl, instructions.set_5_a,
-    instructions.set_6_b, instructions.set_6_c, instructions.set_6_d, instructions.set_6_e, instructions.set_6_h, instructions.set_6_l, instructions.set_6_hl, instructions.set_6_a, instructions.set_7_b, instructions.set_7_c, instructions.set_7_d, instructions.set_7_e, instructions.set_7_h, instructions.set_7_l, instructions.set_7_hl, instructions.set_7_a,
-  ];
+    instructions.set_6_b, instructions.set_6_c, instructions.set_6_d, instructions.set_6_e, instructions.set_6_h, instructions.set_6_l, instructions.set_6_hl, instructions.set_6_a, instructions.set_7_b, instructions.set_7_c, instructions.set_7_d, instructions.set_7_e, instructions.set_7_h, instructions.set_7_l, instructions.set_7_hl, instructions.set_7_a
+  ],
 
   instruction_lengths: [
 
-  ];
+  ],
 
   instruction_timings: {
 
-  };
-};
+  }
+}
+
+module.exports = { maps: maps };
