@@ -1,7 +1,8 @@
-var instructions = require('./cpu-instructions.js')
-var maps = require('./cpu-instructions.js')
+var instructions = require('./instruction/main.js')
+var prefixCB = require('./instructions/prefixCB.js')
+var { instructionTimings, instructionLengths } = require('./cpu_maps.js')
 
-function CPU () {
+function CPU (memory) {
   this.registers = {
     a: 0x01,
     b: 0x00,
@@ -13,9 +14,6 @@ function CPU () {
     f: 0 // flags
   }
 
-  this.instructions = instructions
-  this.maps = maps
-
   this.timer = 0
   this.pc = 0x100
   this.pcPrev = 0
@@ -24,42 +22,29 @@ function CPU () {
   this.t = 0
   this.ime = 0
 
+  this.instructions = instructions(this.registers, this.setFlags, this.getFlags, this.hl, memory.readByte, memory.writeByte)
+  this.prefixCB = prefixCB(this.registers, this.setFlags, this.getFlags, this.hl, memory.readByte, memory.writeByte)
+  this.instructionTimings = instructionTimings
+  this.instructionLengths = instructionLengths
+
   // ----------------- //
   // ----- FLAGS ----- //
   // ----------------- //
 
-  this.zeroFlag = function () {
-    return this.registers.f & 0x80
-  }
-
-  this.subFlag = function () {
-    return this.registers.f & 0x40
-  }
-
-  this.halfFlag = function () {
-    return this.registers.f & 0x20
-  }
-
-  this.carryFlag = function () {
-    return this.registers.f & 0x10
+  this.getFlags = function () {
+    return {
+      zero: this.registers.f & 0x80,
+      sub: this.registers.f & 0x40,
+      half: this.registers.f & 0x20,
+      carry: this.registers.f & 0x10
+    }
   }
 
   this.setFlags = function (flags) {
-    if (flags.carry !== null) {
-      this.registers.f = (flags.carry) ? this.registers.f | 0x10 : this.registers.f &= 0xE0
-    }
-
-    if (flags.zero !== null) {
-      this.registers.f = (flags.zero) ? this.registers.f | 0x80 : this.registers.f &= 0x70
-    }
-
-    if (flags.sub !== null) {
-      this.registers.f = (flags.sub) ? this.registers.f | 0x40 : this.registers.f &= 0xB0
-    }
-
-    if (flags.half !== null) {
-      this.registers.f = (flags.half) ? this.registers.f | 0x20 : this.registers.f &= 0xD0
-    }
+    if (flags.carry !== null) { this.registers.f = (flags.carry) ? this.registers.f | 0x10 : this.registers.f & 0xE0 }
+    if (flags.zero !== null) { this.registers.f = (flags.zero) ? this.registers.f | 0x80 : this.registers.f & 0x70 }
+    if (flags.sub !== null) { this.registers.f = (flags.sub) ? this.registers.f | 0x40 : this.registers.f & 0xB0 }
+    if (flags.half !== null) { this.registers.f = (flags.half) ? this.registers.f | 0x20 : this.registers.f & 0xD0 }
   }
 
   this.interruptEnabled = function () {
@@ -72,12 +57,8 @@ function CPU () {
 
   this.ex = function (opcode) {
     this.pcPrev = this.pc
-    this.maps.instructions[opcode]()
-    this.pc += this.maps.instruction_lengths[opcode]
-    this.pc &= 0xFFFF
-    display.step()
-    timer.step(opcode)
-    interrupt.step()
+    this.instructions[opcode]()
+    this.pc += this.instruction_lengths[opcode] & 0xFFFF
   }
 
   // ------------------- //

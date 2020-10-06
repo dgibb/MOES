@@ -1,51 +1,59 @@
-var instructions = require('./cpu-instructions.js')
+var instructionLengths = [
+  1, 3, 1, 1, 1, 1, 2, 1, 3, 1, 1, 1, 1, 1, 2, 1,
+  2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
+  2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
+  2, 3, 1, 1, 1, 1, 2, 1, 2, 1, 1, 1, 1, 1, 2, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+  1, 1, 3, 3, 3, 1, 2, 1, 1, 1, 3, 1, 3, 3, 2, 1,
+  1, 1, 3, 1, 3, 1, 2, 1, 1, 1, 3, 1, 3, 1, 2, 1,
+  2, 1, 2, 1, 1, 1, 2, 1, 2, 1, 3, 1, 1, 1, 2, 1,
+  2, 1, 2, 1, 1, 1, 2, 1, 2, 1, 3, 1, 1, 1, 2, 1
+]
 
-var maps = {
-
-  instructions: [
-    instructions.nop, instructions.ld_bc_nn, instructions.ld_bc_a, instructions.inc_bc, instructions.inc_b, instructions.dec_b, instructions.ld_b_n, instructions.rlca, instructions.ld_nn_sp, instructions.add_hl_bc, instructions.ld_a_bc, instructions.dec_bc, instructions.inc_c, instructions.dec_c, instructions.ld_c_n, instructions.rrca,
-    instructions.stop, instructions.ld_de_nn, instructions.ld_de_a, instructions.inc_de, instructions.inc_d, instructions.dec_d, instructions.ld_d_n, instructions.rla, instructions.jr_n, instructions.add_hl_de, instructions.ld_a_de, instructions.dec_de, instructions.inc_e, instructions.dec_e, instructions.ld_e_n, instructions.rra,
-    instructions.jr_nz_n, instructions.ld_hl_nn, instructions.ldi_hl_a, instructions.inc_hl, instructions.inc_h, instructions.dec_h, instructions.ld_h_n, instructions.daa, instructions.jr_z_n, instructions.add_hl_hl, instructions.ldi_a_hl, instructions.dec_hl, instructions.inc_l, instructions.dec_l, instructions.ld_l_n, instructions.cpl,
-    instructions.jr_nc_n, instructions.ld_sp_nn, instructions.ldd_hl_a, instructions.inc_sp, instructions.inc_hl_, instructions.dec_hl_, instructions.ld_hl_n, instructions.scf, instructions.jr_c_n, instructions.add_hl_sp, instructions.ldd_a_hl, instructions.dec_sp, instructions.inc_a, instructions.dec_a, instructions.ld_a_n, instructions.ccf,
-    instructions.ld_b_b, instructions.ld_b_c, instructions.ld_b_d, instructions.ld_b_e, instructions.ld_b_h, instructions.ld_b_l, instructions.ld_b_hl, instructions.ld_b_a, instructions.ld_c_b, instructions.ld_c_c, instructions.ld_c_d, instructions.ld_c_e, instructions.ld_c_h, instructions.ld_c_l, instructions.ld_c_hl, instructions.ld_c_a,
-    instructions.ld_d_b, instructions.ld_d_c, instructions.ld_d_d, instructions.ld_d_e, instructions.ld_d_h, instructions.ld_d_l, instructions.ld_d_hl, instructions.ld_d_a, instructions.ld_e_b, instructions.ld_e_c, instructions.ld_e_d, instructions.ld_e_e, instructions.ld_e_h, instructions.ld_e_l, instructions.ld_e_hl, instructions.ld_e_a, instructions.ld_h_b, instructions.ld_h_c, instructions.ld_h_d, instructions.ld_h_e, instructions.ld_h_h, instructions.ld_h_l, instructions.ld_h_hl, instructions.ld_h_a, instructions.ld_l_b, instructions.ld_l_c, instructions.ld_l_d, instructions.ld_l_e, instructions.ld_l_h, instructions.ld_l_l, instructions.ld_l_hl, instructions.ld_l_a,
-    instructions.ld_hl_b, instructions.ld_hl_c, instructions.ld_hl_d, instructions.ld_hl_e, instructions.ld_hl_h, instructions.ld_hl_l, instructions.halt, instructions.ld_hl_a, instructions.ld_a_b, instructions.ld_a_c, instructions.ld_a_d, instructions.ld_a_e, instructions.ld_a_h, instructions.ld_a_l, instructions.ld_a_hl, instructions.ld_a_a,
-    instructions.add_a_b, instructions.add_a_c, instructions.add_a_d, instructions.add_a_e, instructions.add_a_h, instructions.add_a_l, instructions.add_a_hl, instructions.add_a_a, instructions.adc_b_a, instructions.adc_c_a, instructions.adc_d_a, instructions.adc_e_a, instructions.adc_h_a, instructions.adc_l_a, instructions.adc_hl_a, instructions.adc_a_a,
-    instructions.sub_b_a, instructions.sub_c_a, instructions.sub_d_a, instructions.sub_e_a, instructions.sub_h_a, instructions.sub_l_a, instructions.sub_hl_a, instructions.sub_a_a, instructions.sbc_b_a, instructions.sbc_c_a, instructions.sbc_d_a, instructions.sbc_e_a, instructions.sbc_h_a, instructions.sbc_l_a, instructions.sbc_hl_a, instructions.sbc_a_a,
-    instructions.and_b, instructions.and_c, instructions.and_d, instructions.and_e, instructions.and_h, instructions.and_l, instructions.and_hl, instructions.and_a, instructions.xor_b, instructions.xor_c, instructions.xor_d, instructions.xor_e, instructions.xor_h, instructions.xor_l, instructions.xor_hl, instructions.xor_a,
-    instructions.or_b, instructions.or_c, instructions.or_d, instructions.or_e, instructions.or_h, instructions.or_l, instructions.or_hl, instructions.or_a, instructions.cp_b, instructions.cp_c, instructions.cp_d, instructions.cp_e, instructions.cp_h, instructions.cp_l, instructions.cp_hl, instructions.cp_a,
-    instructions.ret_nz, instructions.pop_bc, instructions.jp_nz_nn, instructions.jp_nn, instructions.call_nz_nn, instructions.push_bc, instructions.add_a_n, instructions.rst_0, instructions.ret_z, instructions.ret, instructions.jp_z_nn, instructions.ext_ops, instructions.call_z_nn, instructions.call_nn, instructions.adc_a_n, instructions.rst_8,
-    instructions.ret_nc, instructions.pop_de, instructions.jp_nc_nn, instructions.unused, instructions.call_nc_nn, instructions.push_de, instructions.sub_a_n, instructions.rst_10, instructions.ret_c, instructions.reti, instructions.jp_c_nn, instructions.unused, instructions.call_c_nn, instructions.unused, instructions.sbc_a_n, instructions.rst_18,
-    instructions.ldh_n_a, instructions.pop_hl, instructions.ldh_c_a, instructions.unused, instructions.unused, instructions.push_hl, instructions.and_n, instructions.rst_20, instructions.add_sp_d, instructions.jp_hl, instructions.ld_nn_a, instructions.unused, instructions.unused, instructions.unused, instructions.xor_n, instructions.rst_28,
-    instructions.ldh_a_n, instructions.pop_af, instructions.ldh_a_c, instructions.di, instructions.unused, instructions.push_af, instructions.or_n, instructions.rst_30, instructions.ldhl_sp_d, instructions.ld_sp_hl, instructions.ld_a_nn, instructions.ei, instructions.unused, instructions.unused, instructions.cp_n, instructions.rst_38
+var instructionTimings = [
+  [
+    4, 12, 8, 8, 4, 4, 8, 4, 20, 8, 8, 8, 4, 4, 8, 4,
+    4, 12, 8, 8, 4, 4, 8, 4, 12, 8, 8, 8, 4, 4, 8, 4,
+    12, 12, 8, 8, 4, 4, 8, 4, 12, 8, 8, 8, 4, 4, 8, 4,
+    12, 12, 8, 8, 12, 12, 12, 4, 12, 8, 8, 8, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+    20, 12, 16, 16, 24, 16, 8, 16, 20, 16, 16, 4, 24, 24, 8, 16,
+    20, 12, 16, 0, 24, 16, 20, 16, 16, 0, 24, 0, 8, 16,
+    12, 12, 8, 0, 0, 16, 8, 16, 16, 4, 16, 0, 0, 0, 8, 16,
+    12, 12, 8, 4, 0, 16, 8, 16, 12, 8, 16, 4, 0, 0, 8, 16
   ],
+  [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    8, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0,
+    8, 0, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    8, 0, 12, 0, 12, 0, 0, 0, 8, 0, 12, 0, 12, 0, 0, 0,
+    8, 0, 12, 0, 12, 0, 0, 0, 8, 0, 12, 0, 12, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+  ]
+]
 
-  prefixCB: [
-    instructions.rlc_b, instructions.rlc_c, instructions.rlc_d, instructions.rlc_e, instructions.rlc_h, instructions.rlc_l, instructions.rlc_hl, instructions.rlc_a, instructions.rrc_b, instructions.rrc_c, instructions.rrc_d, instructions.rrc_e, instructions.rrc_h, instructions.rrc_l, instructions.rrc_hl, instructions.rrc_a,
-    instructions.rl_b, instructions.rl_c, instructions.rl_d, instructions.rl_e, instructions.rl_h, instructions.rl_l, instructions.rl_hl, instructions.rl_a, instructions.rr_b, instructions.rr_c, instructions.rr_d, instructions.rr_e, instructions.rr_h, instructions.rr_l, instructions.rr_hl, instructions.rr_a,
-    instructions.sla_b, instructions.sla_c, instructions.sla_d, instructions.sla_e, instructions.sla_h, instructions.sla_l, instructions.sla_hl, instructions.sla_a, instructions.sra_b, instructions.sra_c, instructions.sra_d, instructions.sra_e, instructions.sra_h, instructions.sra_l, instructions.sra_hl, instructions.sra_a,
-    instructions.swap_b, instructions.swap_c, instructions.swap_d, instructions.swap_e, instructions.swap_h, instructions.swap_l, instructions.swap_hl, instructions.swap_a, instructions.srl_b, instructions.srl_c, instructions.srl_d, instructions.srl_e, instructions.srl_h, instructions.srl_l, instructions.srl_hl, instructions.srl_a,
-    instructions.bit_0_b, instructions.bit_0_c, instructions.bit_0_d, instructions.bit_0_e, instructions.bit_0_h, instructions.bit_0_l, instructions.bit_0_hl, instructions.bit_0_a, instructions.bit_1_b, instructions.bit_1_c, instructions.bit_1_d, instructions.bit_1_e, instructions.bit_1_h, instructions.bit_1_l, instructions.bit_1_hl, instructions.bit_1_a,
-    instructions.bit_2_b, instructions.bit_2_c, instructions.bit_2_d, instructions.bit_2_e, instructions.bit_2_h, instructions.bit_2_l, instructions.bit_2_hl, instructions.bit_2_a, instructions.bit_3_b, instructions.bit_3_c, instructions.bit_3_d, instructions.bit_3_e, instructions.bit_3_h, instructions.bit_3_l, instructions.bit_3_hl, instructions.bit_3_a,
-    instructions.bit_4_b, instructions.bit_4_c, instructions.bit_4_d, instructions.bit_4_e, instructions.bit_4_h, instructions.bit_4_l, instructions.bit_4_hl, instructions.bit_4_a, instructions.bit_5_b, instructions.bit_5_c, instructions.bit_5_d, instructions.bit_5_e, instructions.bit_5_h, instructions.bit_5_l, instructions.bit_5_hl, instructions.bit_5_a,
-    instructions.bit_6_b, instructions.bit_6_c, instructions.bit_6_d, instructions.bit_6_e, instructions.bit_6_h, instructions.bit_6_l, instructions.bit_6_hl, instructions.bit_6_a, instructions.bit_7_b, instructions.bit_7_c, instructions.bit_7_d, instructions.bit_7_e, instructions.bit_7_h, instructions.bit_7_l, instructions.bit_7_hl, instructions.bit_7_a,
-    instructions.res_0_b, instructions.res_0_c, instructions.res_0_d, instructions.res_0_e, instructions.res_0_h, instructions.res_0_l, instructions.res_0_hl, instructions.res_0_a, instructions.res_1_b, instructions.res_1_c, instructions.res_1_d, instructions.res_1_e, instructions.res_1_h, instructions.res_1_l, instructions.res_1_hl, instructions.res_1_a,
-    instructions.res_2_b, instructions.res_2_c, instructions.res_2_d, instructions.res_2_e, instructions.res_2_h, instructions.res_2_l, instructions.res_2_hl, instructions.res_2_a, instructions.res_3_b, instructions.res_3_c, instructions.res_3_d, instructions.res_3_e, instructions.res_3_h, instructions.res_3_l, instructions.res_3_hl, instructions.res_3_a,
-    instructions.res_4_b, instructions.res_4_c, instructions.res_4_d, instructions.res_4_e, instructions.res_4_h, instructions.res_4_l, instructions.res_4_hl, instructions.res_4_a, instructions.res_5_b, instructions.res_5_c, instructions.res_5_d, instructions.res_5_e, instructions.res_5_h, instructions.res_5_l, instructions.res_5_hl, instructions.res_5_a,
-    instructions.res_6_b, instructions.res_6_c, instructions.res_6_d, instructions.res_6_e, instructions.res_6_h, instructions.res_6_l, instructions.res_6_hl, instructions.res_6_a, instructions.res_7_b, instructions.res_7_c, instructions.res_7_d, instructions.res_7_e, instructions.res_7_h, instructions.res_7_l, instructions.res_7_hl, instructions.res_7_a,
-    instructions.set_0_b, instructions.set_0_c, instructions.set_0_d, instructions.set_0_e, instructions.set_0_h, instructions.set_0_l, instructions.set_0_hl, instructions.set_0_a, instructions.set_1_b, instructions.set_1_c, instructions.set_1_d, instructions.set_1_e, instructions.set_1_h, instructions.set_1_l, instructions.set_1_hl, instructions.set_1_a,
-    instructions.set_2_b, instructions.set_2_c, instructions.set_2_d, instructions.set_2_e, instructions.set_2_h, instructions.set_2_l, instructions.set_2_hl, instructions.set_2_a, instructions.set_3_b, instructions.set_3_c, instructions.set_3_d, instructions.set_3_e, instructions.set_3_h, instructions.set_3_l, instructions.set_3_hl, instructions.set_3_a,
-    instructions.set_4_b, instructions.set_4_c, instructions.set_4_d, instructions.set_4_e, instructions.set_4_h, instructions.set_4_l, instructions.set_4_hl, instructions.set_4_a, instructions.set_5_b, instructions.set_5_c, instructions.set_5_d, instructions.set_5_e, instructions.set_5_h, instructions.set_5_l, instructions.set_5_hl, instructions.set_5_a,
-    instructions.set_6_b, instructions.set_6_c, instructions.set_6_d, instructions.set_6_e, instructions.set_6_h, instructions.set_6_l, instructions.set_6_hl, instructions.set_6_a, instructions.set_7_b, instructions.set_7_c, instructions.set_7_d, instructions.set_7_e, instructions.set_7_h, instructions.set_7_l, instructions.set_7_hl, instructions.set_7_a
-  ],
-
-  instruction_lengths: [
-
-  ],
-
-  instruction_timings: {
-
-  }
-}
-
-module.exports = { maps: maps };
+module.exports = { instructionLengths, instructionTimings };
