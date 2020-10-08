@@ -1,4 +1,4 @@
-function mbc0(byteArray) {
+function mbc0 (byteArray) {
 
   this.readByte = function(addr) {
 
@@ -7,18 +7,21 @@ function mbc0(byteArray) {
     case 0x8000:
     case 0x9000:
 
-      if (addr >=  0x8000 && addr < 0x9000) {
-        return tileSet1[addr - 0x8000];
-      } else if (addr >=  0x9000 && addr < 0x9800) {
-        return tileSet0[addr - 0x8800];
-      } else if (addr >=  0x9800 && addr < 0x9C00) {
+      if (addr >=  0x8000 && addr < 0x8800) {
+        return tileSet1[addr - 0x8000]
+      } else if (addr >= 0x9000 && addr < 0x9800) {
+      if (addr >=  0x8800 && addr < 0x9000) {
+        return tileSet1[addr - 0x8000]
+      } else if (addr >= 0x9000 && addr < 0x9800) {
+        return tileSet0[addr - 0x8800]
+      } else if (addr >= 0x9800 && addr < 0x9C00) {
         addr -=  0x9800;
         return tileMap0[Math.floor(addr / 32)][addr % 32];
       } else if (addr >=  0x9C00 && addr < 0xA000) {
         addr -=  0x9C00;
         return tileMap1[Math.floor(addr / 32)][addr % 32];
       }
-    break;
+    break
 
     case 0xF000:
       switch (addr & 0xFF00) {
@@ -141,7 +144,7 @@ function mbc0(byteArray) {
           break;
 
           case 0xFF40:
-          MEMORY[addr] = data0;
+          MEMORY[addr] = data;
           display.spriteSize = (data & 0x04) ? 2 : 1;
           display.windowOn = (data & 0x20) ? 1 : 0;
           display.windowMap = (data & 0x40) ? 1 : 0;
@@ -165,7 +168,7 @@ function mbc0(byteArray) {
           break;
 
           case 0xFF47:
-          MEMORY[0xFF47] = data;
+          MEMORY[addr] = data;
           for (var i = 0; i < 4; i++) {
           var ref = data & 0x03;
             switch (ref) {
@@ -191,7 +194,7 @@ function mbc0(byteArray) {
           break;
 
           case 0xFF48:
-          MEMORY[0xFF48] = data;
+          MEMORY[addr] = data;
           for (var i = 0; i < 4; i++) {
           var ref = data & 0x03;
             switch (ref) {
@@ -217,7 +220,7 @@ function mbc0(byteArray) {
           break;
 
           case 0xFF49:
-          MEMORY[0xFF49] = data;
+          MEMORY[addr] = data;
           for (var i = 0; i < 4; i++) {
           var ref = data & 0x03;
             switch (ref) {

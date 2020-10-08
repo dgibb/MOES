@@ -9,8 +9,8 @@ var MBC1 = require('./MemoryBankControllers/MBC1.js')
 
 function Emulator () {
   this.cpu = new CPU()
-  this.cpu = new MMU()
-  this.display = new Display()
+  this.mmu = new MMU()
+  this.display = new Display(mmu)
   this.input = new Input()
   this.timer = new Timer()
   this.interrupt = new Interrupt()
@@ -43,7 +43,7 @@ function Emulator () {
         switch (byteArray[0x147]) {
           case 0:
             console.log('no mbc')
-            this.memory.mbc = new MBC0(byteArray)
+            this.memory.mbc = new MBC0(byteArray, this.display)
             break
 
           case 1:

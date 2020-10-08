@@ -80,7 +80,6 @@ function CPU (memory) {
       val++
       val = -val
     }
-
     return val
   }
 
