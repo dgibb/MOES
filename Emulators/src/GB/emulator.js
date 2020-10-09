@@ -10,14 +10,14 @@ var MBC1 = require('./MemoryBankControllers/MBC1.js')
 function Emulator () {
   this.cpu = new CPU()
   this.mmu = new MMU()
-  this.display = new Display(mmu)
+  this.display = new Display(this.mmu)
   this.input = new Input()
   this.timer = new Timer()
   this.interrupt = new Interrupt()
 
   this.init = function () {
-    this.memory.memoryInit()
-    this.memory.biosInit()
+    this.this.mmu.memoryInit()
+    this.this.mmu.biosInit()
     this.display.canvasInit()
   }
 
@@ -43,14 +43,14 @@ function Emulator () {
         switch (byteArray[0x147]) {
           case 0:
             console.log('no mbc')
-            this.memory.mbc = new MBC0(byteArray, this.display)
+            this.this.mmu.mbc = new MBC0(byteArray, this.display)
             break
 
           case 1:
           case 2:
           case 3:
             console.log('mbc1')
-            this.memory.mbc = new MBC1(byteArray)
+            this.this.mmu.mbc = new MBC1(byteArray)
             break
 
           default:
@@ -74,7 +74,7 @@ function Emulator () {
   }
 
   this.executeInstruction = function () {
-    const opcode = this.memory.readByte(this.cpu.pc)
+    const opcode = this.this.mmu.readByte(this.cpu.pc)
     const cycles = this.cpu.ex(opcode)
     this.display.step(cycles)
     this.timer.step(cycles)
@@ -86,13 +86,68 @@ function Emulator () {
       this.cpu.ex()
     }
     while (this.display.line !== 0) {
-      this.cpu.ex(this.memory.readByte(this.cpu.pc))
+      this.cpu.ex(this.this.mmu.readByte(this.cpu.pc))
     }
   }
 
   this.shrink = function (x) {
     console.log(x)
     x.style.maxHeight = 0
+  }
+
+  // ----------------- //
+  // ----- debug ----- //
+  // ----------------- //
+
+  this.printStack = function () {
+    console.log('STACK:')
+    var i = 0
+    while (((this.sp + i) & 0xFF) !== 0xFF) {
+      console.log((this.sp + i).toString(16), ': ', this.mmu.readByte(this.sp + i))
+      i += 2
+    }
+  }
+
+  this.runInstruction = function () {
+    this.showFunc()
+    this.ex(this.mmu.readByte(this.pc))
+    this.showState()
+    this.display.showState()
+  }
+
+  this.showFunc = function () {
+    var pc = (this.pc).toString(16)
+    var instructionName = this.maps.instructions[this.mmu.readByte(this.pc)].name
+    var instructionHex = this.mmu.readByte(this.pc).toString(16)
+    console.log('executing: MEMORY[', pc, '], ', instructionName, ', hex ', instructionHex)
+  }
+
+  this.showState = function () {
+    console.log('current state: ')
+    console.log('AF: ', this.toHex(this.a), this.toHex(this.registers.f))
+    console.log('BC: ', this.toHex(this.b), this.toHex(this.c))
+    console.log('DE: ', this.toHex(this.d), this.toHex(this.e))
+    console.log('HL: ', this.toHex(this.h), this.toHex(this.l))
+    console.log('sp: ', this.sp.toString(16))
+    console.log('pc: ', this.pc.toString(16))
+    console.log('m: ', this.m)
+    console.log('t: ', this.t)
+    console.log('divCnt: ', this.toHex(this.timer.divCnt))
+    console.log('DIV(FF04):', this.toHex(this.mmu.mbc.MEMORY[0xFF04]))
+    console.log('timaCnt: ', this.toHex(this.timer.timaCnt))
+    console.log('TIMA(FF05):', this.toHex(this.mmu.mbc.MEMORY[0xFF05]))
+    console.log('TMA(FF06):', this.toHex(this.mmu.mbc.MEMORY[0xFF06]))
+    console.log('TAC(FF07):', this.toHex(this.mmu.mbc.MEMORY[0xFF07]))
+    console.log('IF:', this.toHex(this.mmu.mbc.MEMORY[0xFF0F]))
+    console.log('IE:', this.toHex(this.mmu.mbc.MEMORY[0xFFFF]))
+  }
+
+  this.toHex = function (n) {
+    var hex = n.toString(16)
+    while (hex.length < 2) {
+      hex = '0' + hex
+    }
+    return hex
   }
 }
 

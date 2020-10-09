@@ -87,60 +87,6 @@ function CPU (memory) {
     return this.getAddr(this.registers.h, this.registers.l)
   }
 
-  // ----------------- //
-  // ----- debug ----- //
-  // ----------------- //
-
-  this.printStack = function () {
-    console.log('STACK:')
-    var i = 0
-    while (((this.sp + i) & 0xFF) !== 0xFF) {
-      console.log((mmu.sp + i).toString(16), ': ', mmu.readByte(this.sp + i))
-      i += 2
-    }
-  }
-
-  this.runInstruction = function () {
-    this.showFunc()
-    this.ex(mmu.readByte(this.pc))
-    this.showState()
-    display.showState()
-  }
-
-  this.showFunc = function () {
-    var pc = (this.pc).toString(16);
-    var instructionName = this.maps.instructions[mmu.readByte(this.pc)].name
-    var instructionHex = mmu.readByte(this.pc).toString(16)
-    console.log('executing: MEMORY[', pc, '], ', instructionName, ', hex ', instructionHex)
-  }
-
-  this.showState = function () {
-    console.log('current state: ')
-    console.log('AF: ', this.toHex(this.a), this.toHex(this.registers.f))
-    console.log('BC: ', this.toHex(this.b), this.toHex(this.c))
-    console.log('DE: ', this.toHex(this.d), this.toHex(this.e))
-    console.log('HL: ', this.toHex(this.h), this.toHex(this.l))
-    console.log('sp: ', this.sp.toString(16))
-    console.log('pc: ', this.pc.toString(16))
-    console.log('m: ', this.m)
-    console.log('t: ', this.t)
-    console.log('divCnt: ', this.toHex(timer.divCnt))
-    console.log('DIV(FF04):', this.toHex(MEMORY[0xFF04]))
-    console.log('timaCnt: ', this.toHex(timer.timaCnt))
-    console.log('TIMA(FF05):', this.toHex(MEMORY[0xFF05]))
-    console.log('TMA(FF06):', this.toHex(MEMORY[0xFF06]))
-    console.log('TAC(FF07):', this.toHex(MEMORY[0xFF07]))
-    console.log('IF:', this.toHex(MEMORY[0xFF0F]))
-    console.log('IE:', this.toHex(MEMORY[0xFFFF]))
-  }
-
-  this.toHex = function (n) {
-    var hex = n.toString(16)
-    while (hex.length < 2) {
-      hex = '0' + hex
-    }
-    return hex
-  }
 }
 
 module.exports = { CPU: CPU }

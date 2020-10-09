@@ -1,5 +1,5 @@
 // 0x00 - 0x07
-var rlc = function (cpu, reg, reg2) {
+var rlc = function (cpu, memory, reg, reg2) {
   if (reg2) {
     return () => {
       var value = memory.readByte(cpu.hl())
@@ -10,7 +10,7 @@ var rlc = function (cpu, reg, reg2) {
     }
   } else {
     return () => {
-      var carry = (cpu.registers[reg] & 0x80) ? 1 : 0;
+      var carry = (cpu.registers[reg] & 0x80) ? 1 : 0
       cpu.registers[reg] = ((cpu.registers[reg] << 1) & 0xFF) + carry
       cpu.setFlags({ carry: carry, zero: !cpu.registers[reg], half: 0, sub: 0 })
     }
@@ -18,7 +18,7 @@ var rlc = function (cpu, reg, reg2) {
 }
 
 // 0x08 - 0x0F
-var rrc = function (cpu, reg, reg2) {
+var rrc = function (cpu, memory, reg, reg2) {
   if (reg2) {
     return () => {
       var value = memory.readByte(cpu.hl())
@@ -31,13 +31,13 @@ var rrc = function (cpu, reg, reg2) {
     return () => {
       var carry = (cpu.registers[reg] & 0x01) ? 0x80 : 0
       cpu.registers[reg] = ((cpu.registers[reg] >> 1) & 0xFF) + carry
-      cpu.setFlags({carry: carry, zero: !cpu.registers[reg], half: 0, sub: 0})
+      cpu.setFlags({ carry: carry, zero: !cpu.registers[reg], half: 0, sub: 0 })
     }
   }
 }
 
 // 0x10 - 0x017
-var rl = function (cpu, reg, reg2) {
+var rl = function (cpu, memory, reg, reg2) {
   if (reg2) {
     return () => {
       var value = memory.readByte(cpu.hl())
@@ -52,12 +52,12 @@ var rl = function (cpu, reg, reg2) {
       var carryIn = (cpu.getFlags().carry) ? 1 : 0
       var carry = cpu.registers[reg] & 0x80
       cpu.registers[reg] = ((cpu.registers[reg] << 1) & 0xFF) + carryIn
-      cpu.setFlags({carry: carry, zero: !cpu.registers[reg], half: 0, sub: 0})
+      cpu.setFlags({ carry: carry, zero: !cpu.registers[reg], half: 0, sub: 0 })
     }
   }
 }
 
- /*
+/*
 
   //0x18
    rr_b: function () {
@@ -82,7 +82,6 @@ var rl = function (cpu, reg, reg2) {
      cpu.b = ((cpu.b >> 1) + bit7) & 0xFF
      cpu.setFlags({carry: carry, zero: !cpu.b, half: 0, sub: 0})
   },
-
 
   //0x1B
   rr_e: function () {
@@ -192,7 +191,6 @@ var rl = function (cpu, reg, reg2) {
     if (cpu.b===0){cpu.setZeroFlag()} else {cpu.resetZeroFlag()}
     cpu.resetHalfFlag()
     cpu.resetSubFlag()
-
 
   },
 
@@ -584,7 +582,6 @@ var rl = function (cpu, reg, reg2) {
     cpu.setHalfFlag()
     cpu.m=2 cpu.t=12
   },
-
 
   //0x67
    bit_4_a : function() {
@@ -1592,8 +1589,8 @@ var rl = function (cpu, reg, reg2) {
 */
 
 function PrefixCB (registers, getFlags, setFlags, readByte, writeByte) {
-  const cpu = { registers, getFlags, setFlags }
-  const memory = { readByte, writeByte }
+  var cpu = { registers, getFlags, setFlags }
+  var memory = { readByte, writeByte }
   return [
     rlc(cpu, memory, 'b'),
     rlc(cpu, memory, 'c'),

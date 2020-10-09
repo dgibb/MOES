@@ -56,4 +56,4 @@ var instructionTimings = [
   ]
 ]
 
-module.exports = { instructionLengths, instructionTimings };
+module.exports = { instructionLengths, instructionTimings }

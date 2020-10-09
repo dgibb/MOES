@@ -1,11 +1,19 @@
-//0x00
-nop: function () {},
+// eslint-disable-file calmelcase
 
-//0x01
-ld_bc_nn: function () {
-  cpu.b = memory.readByte(cpu.pc + 2)
-  cpu.c = memory.readByte(cpu.pc + 1)
-},
+// 0x00
+var nop = function () {
+  return function () {}
+}
+
+// 0x01, 0x11, 0x21, 0x31
+var ldR16I16 = function (cpu, memory, reg, reg2) {
+  return function () {
+    cpu.registers[reg] = memory.readByte(cpu.pc + 2)
+    cpu.registers[reg2] = memory.readByte(cpu.pc + 1)
+  }
+}
+
+/*
 
 //0x02
 ld_bc_a: function () {
@@ -1752,7 +1760,6 @@ rst_18: function () {
 },
 }
 
-
 //0xE0
 ldh_n_a: function () {
   var addr = 0xFF00 | memory.readByte(cpu.pc + 1)
@@ -1931,3 +1938,16 @@ rst_38: function () {
   memory.writeWord(cpu.pc + 1, cpu.sp)
   cpu.pc = 0x0038
 },
+
+*/
+
+function Instructions (registers, getFlags, setFlags, readByte, writeByte) {
+  const cpu = { registers, getFlags, setFlags }
+  const memory = { readByte, writeByte }
+  return [
+    nop(),
+    ldR16I16(cpu, memory, 'b', 'c')
+  ]
+}
+
+module.exports = { Instructions: Instructions }
