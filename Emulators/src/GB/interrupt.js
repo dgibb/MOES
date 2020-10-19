@@ -1,80 +1,90 @@
 function Interrupt (cpu, memory, timer, display) {
   this.step = function () {
-    if ((memory.mmu.MEMORY[0xFFFF] & 0x01) && (memory.mmu.MEMORY[0xFF0F] & 0x01)) {
-      this.vBlankInt()
-    } else if ((memory.mmu.memory.mmu.MEMORY[0xFFFF] & 0x02) && (memory.mmu.MEMORY[0xFF0F] & 0x02)) {
-      this.lcdStatInt()
-    } else if ((memory.mmu.MEMORY[0xFFFF] & 0x04) && (memory.mmu.MEMORY[0xFF0F] & 0x04)) {
-      this.timerInt()
-    } else if ((memory.mmu.MEMORY[0xFFFF] & 0x08) && (memory.mmu.MEMORY[0xFF0F] & 0x08)) {
-      this.serialInt()
-    } else if ((memory.mmu.MEMORY[0xFFFF] & 0x10) && (memory.mmu.MEMORY[0xFF0F] & 0x10)) {
-      this.joypadInt()
-    }
+    var requested = memory.MEMORY[0xFFFF] & memory.memory[0xFF0F]
+    if (!requested) {
+    } else if (this.vBlank.isRequested(requested)) {
+      this.vBlank.trigger()
+    } else if (this.lcdStat.isRequested(requested)) {
+      this.lcdStat.trigger()
+    } else if (this.timer.isRequested(requested)) {
+      this.timer.trigger()
+    } else if (this.serial.isRequested(requested)) {
+      this.serial.trigger()
+    } else if (this.joypad.isRequested(requested)) { this.joypad.trigger() }
   }
 
-  this.vBlankInt = function () {
-    if (cpu.ime === 1) {
+  this.vBlank = {
+    isRequested: function (val) {
+      return val & 0x01
+    },
+    trigger: function () {
       cpu.sp -= 2
       memory.writeWord(cpu.pc, cpu.sp)
       cpu.pc = 0x40
       cpu.ime = 0
-      memory.mmu.MEMORY[0xFF0F] &= 0xFE
-      cpu.t = 20
-      timer.step()
-      display.step()
+      memory.MEMORY[0xFF0F] &= 0xFE
+      timer.step(20)
+      display.step(20)
     }
   }
 
-  this.lcdStatInt = function () {
-    if (cpu.ime === 1) {
+  this.lcdStat = {
+    isRequested: function (val) {
+      return val & 0x02
+    },
+    trigger: function () {
       cpu.sp -= 2
       memory.writeWord(cpu.pc, cpu.sp)
       cpu.pc = 0x48
       cpu.ime = 0
-      memory.mbc.memory.mmu.MEMORY[0xFF0F] &= 0xFD
-      cpu.t = 20
-      timer.step()
-      display.step()
+      memory.mbc.MEMORY[0xFF0F] &= 0xFD
+      timer.step(20)
+      display.step(20)
     }
   }
 
-  this.timerInt = function () {
-    if (cpu.ime === 1) {
+  this.timer = {
+    isRequested: function (val) {
+      return val & 0x04
+    },
+    trigger: function () {
       cpu.sp -= 2
       memory.writeWord(cpu.pc, cpu.sp)
       cpu.pc = 0x50
       cpu.ime = 0
-      memory.mmu.MEMORY[0xFF0F] &= 0xFB
-      cpu.t = 20
-      timer.step()
-      display.step()
+      memory.mbc.MEMORY[0xFF0F] &= 0xFB
+      timer.step(20)
+      display.step(20)
     }
   }
 
-  this.serialInt = function () {
-    if (cpu.ime === 1) {
+  this.serial = {
+    isRequested: function (val) {
+      return val & 0x08
+    },
+    trigger: function () {
       cpu.sp -= 2
       memory.writeWord(cpu.pc, cpu.sp)
       cpu.pc = 0x58
       cpu.ime = 0
-      memory.mmu.MEMORY[0xFF0F] &= 0xF7
-      cpu.t = 20
-      timer.step()
-      display.step()
+      memory.mbc.MEMORY[0xFF0F] &= 0xF7
+      timer.step(20)
+      display.step(20)
     }
   }
 
-  this.joypadInt = function () {
-    if (cpu.ime === 1) {
+  this.joypad = {
+    isRequested: function (val) {
+      return val & 0x10
+    },
+    trigger: function () {
       cpu.sp -= 2
       memory.writeWord(cpu.pc + 1, cpu.sp)
       cpu.pc = 0x60
       cpu.ime = 0
-      memory.mmu.MEMORY[0xFF0F] &= 0xEF
-      cpu.t = 20
-      timer.step()
-      display.step()
+      memory.mbc.MEMORY[0xFF0F] &= 0xEF
+      timer.step(20)
+      display.step(20)
     }
   }
 }

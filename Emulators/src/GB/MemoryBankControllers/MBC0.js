@@ -1,5 +1,4 @@
-function MBC0 (byteArray, display, timer, interrupt) {
-  this.MEMORY = []
+function MBC0 (byteArray) {
 
   this.readByte = function (addr) {
     switch (addr & 0xF000) {
@@ -63,9 +62,7 @@ function MBC0 (byteArray, display, timer, interrupt) {
   }
 
   this.writeByte = function (data, addr) {
-
     switch (addr & 0xF000) {
-
       case 0x0000:
       case 0x1000:
       case 0x2000:

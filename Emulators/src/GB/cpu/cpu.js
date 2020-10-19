@@ -86,7 +86,6 @@ function CPU (memory) {
   this.hl = function () {
     return this.getAddr(this.registers.h, this.registers.l)
   }
-
 }
 
 module.exports = { CPU: CPU }

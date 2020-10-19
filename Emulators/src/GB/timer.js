@@ -1,30 +1,81 @@
-var timer = {
+function timer() {
 
-  divCnt: 0,
-  timaCnt: 0,
-  timaSpeed: 1024,
-  timaOn: 0,
+  this.div = 0
+  this.divCnt = 0
 
-  step: function (opcode) {
+  this.tima = 0
+  this.timaCnt = 0
 
-    timer.divCnt += cpu.maps.instruction_timings.t[opcode];
-    if (timer.timaOn) {timer.timaCnt += cpu.maps.instruction_timings.t[opcode];}
-    if ((MEMORY[0xFF07] & 0x4) !== 0) {timer.timaOn = 1;} else {timer.timaOn = 0; timer.timaCnt = 0;}
+  this.timaMod = 0
 
-    if (timer.divCnt > 255) {
-      timer.divCnt = timer.divCnt % 256;
-      MEMORY[0xFF04] += 1;
-      MEMORY[0xFF04] %= 256;
+  this.timaSpeed = 1024
+  this.timaOn = 0
+  this.timerCtrl = 0
+
+  this.step = function (cycles) {
+    timer.divCnt += cycles
+    if (timer.timaOn) {
+      timer.timaCnt += cycles
+    }
+
+    if (timer.divCnt > 0xFF) {
+      timer.divCnt = timer.divCnt % 0xFF
+      this.div += 1
+      this.div %= 256
     }
 
     if (timer.timaCnt > timer.timaSpeed) {
-      var x = Math.floor(timer.timaCnt / timer.timaSpeed);
-      timer.timaCnt = timer.timaCnt % timer.timaSpeed;
-      MEMORY[0xFF05] += x;
-      if (MEMORY[0xFF05] > 0xFF) {
-        MEMORY[0xFF0F] |= 0x04;
-        MEMORY[0xFF05] = MEMORY[0xFF06];
+      var x = Math.floor(timer.timaCnt / timer.timaSpeed)
+      timer.timaCnt = timer.timaCnt % timer.timaSpeed
+      this.tima += x
+      if (this.tima > 0xFF) {
+        MEMORY[0xFF0F] |= 0x04
+        this.tima = this.timaMOd
       }
     }
-  },
-};
+  }
+
+  this.setTimaSpeed = function (val) {
+    this.timaSpeed = timaSpeeds[val]
+  }
+
+  this.readByte = function (addr) {
+    switch (addr) {
+      case 0xFF04:
+        return this.divCnt
+
+      case 0xFF05:
+        return this.timaCnt
+
+      case 0xFF06:
+        return this.timaMod
+
+      case 0xFF07:
+        return this.timerCtrl
+    }
+  }
+
+  this.writeByte = function (data, addr) {
+    switch (addr) {
+      case 0xFF04:
+        this.divCnt = 0x00
+        break
+
+      case 0xFF05:
+        this.timaCnt = data
+        break
+
+      case 0xFF06:
+        this.timaMod = data
+        break
+
+      case 0xFF07:
+        this.timerCtrl = data
+        this.timaOn = (data >> 2) & 0x01
+        this.timaSpeed = timaSpeeds[data & 0x03]
+        break
+    }
+  }
+}
+
+var timaSpeeds = [1024, 16, 64, 256]

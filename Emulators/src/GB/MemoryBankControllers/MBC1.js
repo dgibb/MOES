@@ -74,14 +74,14 @@ function mbc1 () {
     }
   }
 
-  this.readWord = function(addr) {
+  this.readWord = function (addr) {
     var data = this.readByte(addr + 1)
     data = data << 8
     data |= this.readByte(addr)
     return data
   }
 
-  this.writeByte = function(data, addr) {
+  this.writeByte = function (data, addr) {
 
     switch (addr&0xF000) {
 

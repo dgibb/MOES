@@ -8,12 +8,13 @@ var MBC0 = require('./MemoryBankControllers/MBC0.js')
 var MBC1 = require('./MemoryBankControllers/MBC1.js')
 
 function Emulator () {
-  this.cpu = new CPU()
-  this.mmu = new MMU()
-  this.display = new Display(this.mmu)
-  this.input = new Input()
-  this.timer = new Timer()
-  this.interrupt = new Interrupt()
+  this.interruptRelay = { enable: 0, request: 0 } // 0xFF0F & 0xFFFF
+  this.display = new Display(this.interruptRelay)
+  this.input = new Input(this.interruptRelay)
+  this.timer = new Timer(this.interruptRelay)
+  this.mmu = new MMU(this.display, this.input, this.timer, this.interrupt, this.interruptRegisters, this.interruptRelay)
+  this.cpu = new CPU(this.mmu)
+  this.interrupt = new Interrupt(this.cpu, this.mmu, this.timer, this.interruptRelay)
 
   this.init = function () {
     this.this.mmu.memoryInit()
@@ -78,7 +79,7 @@ function Emulator () {
     const cycles = this.cpu.ex(opcode)
     this.display.step(cycles)
     this.timer.step(cycles)
-    this.interrupt.step(cycles)
+    if (this.cpu.ime) { this.interrupt.step(cycles) }
   }
 
   this.runFrame = function () {
