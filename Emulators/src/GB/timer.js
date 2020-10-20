@@ -1,5 +1,4 @@
-function timer() {
-
+function Timer () {
   this.div = 0
   this.divCnt = 0
 
@@ -79,3 +78,5 @@ function timer() {
 }
 
 var timaSpeeds = [1024, 16, 64, 256]
+
+module.exports = { Timer: Timer }

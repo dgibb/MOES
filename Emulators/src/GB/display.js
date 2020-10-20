@@ -1,5 +1,13 @@
 const { signDecode } = require('./utils.js')
-const { getXYvals } = require('./utils.js')
+// const { getXYvals } = require('./utils.js')
+
+
+// constants
+var tileSize = 16
+var spriteYDisplacement = 16;
+var spriteXdisplacement = 8
+var spriteWidth = 8
+var mapWidth = 32
 
 function Display (interruptRelay) {
   this.tCount = 0
@@ -49,7 +57,8 @@ function Display (interruptRelay) {
   this.paletteRef = [255, 192, 96, 0]
   this.objPalettes = [[], []]
 
-  this.pixMapIsDirty = false
+  this.precalcBGDirty = false
+  this.precalcWindowDirty = false
 
   this.step = function (cycles) {
     this.tCount += cycles
@@ -150,12 +159,37 @@ function Display (interruptRelay) {
     }
   }
 
+  this.drawBGPrecalcBuffer =function () {
+    for(tileY = 0; tileY < 32; tileY++) {
+      for(tileX = 0; tileX < 32; tileX++) {
+        var tile = this.tileMap[this.bgTileMap][tileY][tileX]
+        tile = (this.activeTileSet) ? tile : signDecode(tile) + 128
+        var tileAddr = tileSize * tile
+
+        for(pixelY = 0; pixelY < 8; pixelY++) {
+          var preCalcMapY = (tileY * tileWidth) + pixelY
+          var bit0 = tileSet[this.activeTileSet][tileAddr]
+          var bit1 = tileSet[this.activeTileSet][tileAddr + 1]
+          for(pixelX = 7; pixelX >= 0; pixelX--) {
+            var preCalcMapX = (tileX * tileWidth) + pixelY
+            var pixel = (bit1 & 0x01) ? 2 : 0
+            pixel +=  (bit1 & 0x01) ? 1 : 0
+            preCalculatedPixMap[preCalcMapY][preCalcMapX] = pixel
+            bit0 >>= 1
+            bit1 >>= 1
+          }
+          tileAddr += 2;
+        }
+      }
+    }
+  }
+
   this.getBGTile = function (i) {
-    var tileY = (Math.floor((this.scrollY + this.line) / 8)) % 32
-    var tileX = (Math.floor((this.scrollX + i) / 8)) % 32
-    var tile = this.tileMap0[this.bgTileMap][tileY][tileX]
+    var tileY = (Math.floor((this.scrollY + this.line) / tileWidth)) % mapWidth
+    var tileX = (Math.floor((this.scrollX + i) / tileWidth)) % mapWidth
+    var tile = this.tileMap[this.bgTileMap][tileY][tileX]
     tile = (this.activeTileSet) ? tile : signDecode(tile) + 128
-    return 16 * tile
+    return tileSize * tile
   }
 
   this.getWindowTile = function (i) {
@@ -163,7 +197,7 @@ function Display (interruptRelay) {
     var tileX = (Math.floor((i - this.windowX + 7) / 8)) % 32
     var tile = this.tileMap[this.windowTileMap][tileX][tileY]
     tile = (this.activeTileSet) ? tile : signDecode(tile) + 128
-    return 16 * tile
+    return tileSize * tile
   }
 
   this.getPixel = function (tileOffset, bitOffset) {
@@ -212,44 +246,42 @@ function Display (interruptRelay) {
 
   this.drawSprites = function () {
     for (var i = 0; i < 40; i++) {
-      if (this.graphicsDebug) { console.log('sprite', 40 - i) }
-      var orientation = this.spriteData[i + 3]
-      orientation = (orientation >> 5) & 0x03
-      this.drawSprite(this.spriteData[i], orientation)
+      this.drawSprite(this.spriteData[i])
     }
   }
 
-  this.drawSprite = function (sprite, orientation) {
+  this.drawSprite = function (sprite) {
     // if sprite not hidden
-    if (!(sprite[0] || sprite[1])) {
-      var tile = this.tileSet1.slice((sprite[2] * 16), (sprite[2] * 16) + (16 * this.spriteSize))
-      var bgLine = sprite[0] - 16
+    if (!(sprite.y | sprite.x)) {
+      var tileOffset = sprite.tile * tileSize
+      var tileData = this.tileSet[1].slice((tileOffset), tileOffset + this.spriteSize)
+      var bgLine = sprite.y - spriteYDisplacement
       var objPalette = (sprite[3] >> 4) & 0x01
 
       // for each line in sprite
-      for (var j = 0; j < (8 * this.spriteSize); j++) {
-        // if on this.screen
-        if (this.lineOnScreen(sprite[0] - 16, j)) {
-          var spriteLine = this.getSpriteLine(j, orientation)
+      for (var currentSpriteLine = 0; currentSpriteLine < this.spriteSize; currentSpriteLine++) {
+        // if on screen
+        if (this.lineOnScreen(sprite.y - spriteYDisplacement, currentSpriteLine)) {
+          var spriteLineData = this.getSpriteLine(currentSpriteLine, sprite.orientation)
           // var spriteLine= tile.slice(j*2, (j*2)+2);
           // var spriteLine= tile.slice((16*this.spriteSize)-(j*2), (16*this.spriteSize)-(j*2)+2);
           var lineOffset = bgLine * 640
           // for each pixel in line
-          for (var k = 0; k < 8; k++) {
+          for (var currentPixel = 0; currentPixel < 8; current++) {
             // if pix on screen
-            if (this.pixOnScreen(sprite[1] - 8, k)) {
-              var pixOffset = (sprite[1] - 8 + k) * 4
-              var pixelXVal = (orientation & 0x01) ? k : 7 - k
-              var pixel = ((spriteLine[1] >> pixelXVal) & 0x01) ? 2 : 0
-              pixel += ((spriteLine[0] >> pixelXVal) & 0x01) ? 1 : 0
+            if (this.pixOnScreen(sprite.x - 8, k)) {
+              var pixOffset = (sprite.x - 8 + k) * 4
+              var pixelXVal = (sprite.orientation & 0x01) ? k : 7 - k
+              var pixel = ((spriteLineData[1] >> pixelXVal) & 0x01) ? 2 : 0
+              pixel += ((spriteLineData[0] >> pixelXVal) & 0x01) ? 1 : 0
 
               if (pixel !== 0) {
                 // the sprite has priority
-                if (!(sprite[3] & 0x80)) {
+                if (!sprite.priority) {
                   this.pixData.data[lineOffset + pixOffset] = this.objPalettes[objPalette][pixel]
                   this.pixData.data[lineOffset + pixOffset + 1] = this.objPalettes[objPalette][pixel]
                   this.pixData.data[lineOffset + pixOffset + 2] = this.objPalettes[objPalette][pixel]
-                } else if (this.bgPixIs0(addr, j, k)) {
+                } else if (this.bgPixIs0(currentLine, currentPixel, sprite.y, sprite.x) {
                   this.pixData.data[lineOffset + pixOffset] = this.objPalettes[objPalette][pixel]
                   this.pixData.data[lineOffset + pixOffset + 1] = this.objPalettes[objPalette][pixel]
                   this.pixData.data[lineOffset + pixOffset + 2] = this.objPalettes[objPalette][pixel]
@@ -263,19 +295,8 @@ function Display (interruptRelay) {
     }
   }
 
-  this.bgPixIs0 = function (addr, j, k) {
-    var tileY = Math.floor((this.scrollY + MEMORY[addr] + (j) - (16)) / 8)
-    var tileX = Math.floor((this.scrollX + MEMORY[addr + 1] + (k) - 8) / 8)
-    var offsetY = (this.scrollY + MEMORY[addr] + (j) - 16) % 8
-    var offsetX = (this.scrollX + MEMORY[addr + 1] + (k) - 8) % 8
-    var tile = ((MEMORY[0xFF40] & 0x08) === 0x80) ? this.tileMap1[tileY][tileX] : this.tileMap0[tileY][tileX]
-    if ((MEMORY[0xFF40] & 0x10) === 0) { tile = signDecode(tile) + 128 }
-    tile = 16 * tile
-    var bit0 = ((MEMORY[0xFF40] & 0x10) === 0x10) ? this.tileSet1[tile + offsetY] : this.tileSet0[tile + offsetY]
-    var bit1 = ((MEMORY[0xFF40] & 0x10) === 0x10) ? this.tileSet1[tile + offsetY + 1] : this.tileSet0[tile + offsetY + 1]
-    var pix = ((bit1 >> (7 - offsetX)) & 0x01) ? 2 : 0
-    pix += ((bit0 >> (7 - offsetX)) & 0x01) ? 1 : 0
-    return (pix === 0)
+  this.bgPixIs0 = function (currentLine, currentPixel, spriteY, spriteX) {
+    var x = this.scrollX + spriteX + currentPixel -
   }
 
   this.canvasInit = function () {
@@ -368,10 +389,8 @@ function Display (interruptRelay) {
                 return this.MEMORY[addr]
             }
         }
-
     }
   }
-
 
   this.writeByte = function (data, addr) {
     switch (addr & 0xF000) {
@@ -427,96 +446,92 @@ function Display (interruptRelay) {
               case 0xFF44:
                 this.line = data
                 break
+
+              case 0xFF47:
+                this.MEMORY[addr] = data
+                for (var i = 0; i < 4; i++) {
+                  var ref = data & 0x03
+                  switch (ref) {
+                    case 0:
+                      this.paletteRef[i] = 255
+                      break
+
+                    case 1:
+                      this.paletteRef[i] = 192
+                      break
+
+                    case 2:
+                      this.paletteRef[i] = 96
+                      break
+
+                    case 3:
+                      this.paletteRef[i] = 0
+                      break
+                  }
+                  data = data >> 2
+                }
+                break
+
+              case 0xFF48:
+                this.MEMORY[addr] = data
+                for (var i = 0; i < 4; i++) {
+                  var ref = data & 0x03
+                  switch (ref) {
+                    case 0:
+                      this.objPalettes[0][i] = 255
+                      break
+
+                    case 1:
+                      this.objPalettes[0][i] = 192
+                      break
+
+                    case 2:
+                      this.objPalettes[0][i] = 96
+                      break
+
+                    case 3:
+                      this.objPalettes[0][i] = 0
+                      break
+                  }
+                  data = data >> 2;
+                }
+                break
+
+              case 0xFF49:
+                this.MEMORY[addr] = data
+                for (var i = 0; i < 4; i++) {
+                  var ref = data & 0x03
+                  switch (ref) {
+
+                    case 0:
+                      this.objPalettes[1][i] = 255
+                      break
+
+                    case 1:
+                      this.objPalettes[1][i] = 192
+                      break
+
+                    case 2:
+                      this.objPalettes[1][i] = 96
+                      break
+
+                    case 3:
+                      this.objPalettes[1][i] = 0
+                      break
+                  }
+                  data = data >> 2
+                }
+                break
+
+              case 0xFF4A:
+                this.windowY = data
+                break
+
+              case 0xFF4B:
+                this.windowX = data
+                break
             }
-
-          case 0xFF46:
-            oamDMATransfer(data)
-            break
-
-          case 0xFF47:
-            this.MEMORY[addr] = data
-            for (var i = 0; i < 4; i++) {
-              var ref = data & 0x03
-              switch (ref) {
-                case 0:
-                  this.paletteRef[i] = 255
-                  break
-
-                case 1:
-                  this.paletteRef[i] = 192
-                  break
-
-                case 2:
-                  this.paletteRef[i] = 96
-                  break
-
-                case 3:
-                  this.paletteRef[i] = 0
-                  break
-              }
-              data = data >> 2
-            }
-            break
-
-          case 0xFF48:
-            this.MEMORY[addr] = data
-            for (var i = 0; i < 4; i++) {
-              var ref = data & 0x03
-              switch (ref) {
-                case 0:
-                  this.objPalettes[0][i] = 255
-                  break
-
-                case 1:
-                  this.objPalettes[0][i] = 192
-                  break
-
-                case 2:
-                  this.objPalettes[0][i] = 96
-                  break
-
-                case 3:
-                  this.objPalettes[0][i] = 0
-                  break
-              }
-              data = data >> 2;
-            }
-            break
-
-          case 0xFF49:
-            this.MEMORY[addr] = data
-            for (var i = 0; i < 4; i++) {
-              var ref = data & 0x03
-              switch (ref) {
-
-                case 0:
-                  this.objPalettes[1][i] = 255
-                  break
-
-                case 1:
-                  this.objPalettes[1][i] = 192
-                  break
-
-                case 2:
-                  this.objPalettes[1][i] = 96
-                  break
-
-                case 3:
-                  this.objPalettes[1][i] = 0
-                  break
-              }
-              data = data >> 2
-            }
-            break
-
-          case 0xFF4A:
-            this.windowY = data
-            break
-
-          case 0xFF4B:
-            this.windowX = data
-            break
-      }
+        }
     }
   }
 

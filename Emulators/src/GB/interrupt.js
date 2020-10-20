@@ -10,7 +10,9 @@ function Interrupt (cpu, memory, timer, display) {
       this.timer.trigger()
     } else if (this.serial.isRequested(requested)) {
       this.serial.trigger()
-    } else if (this.joypad.isRequested(requested)) { this.joypad.trigger() }
+    } else if (this.joypad.isRequested(requested)) {
+      this.joypad.trigger()
+    }
   }
 
   this.vBlank = {

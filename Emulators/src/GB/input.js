@@ -1,34 +1,34 @@
-function input() {
+function Input (interruptRelay) {
+  this.keys = [0xFF, 0xFF]
 
-  this.keys = [0xFF, 0xFF],
-
-  this.keyDown = function(e){
-      MEMORY[0xFF0F]|=0x10;
-      //if (cpu.stop=1){emulator.runGame();}
-      //console.log(e.keyCode);
-        switch(e.keyCode)
-    {
-        case 65: input.keys[1] &= 0xE; break;//A
-              case 83: input.keys[1] &= 0xD; break;//B
-              case 38: input.keys[0] &= 0xB; break;//up
-              case 40: input.keys[0] &= 0x7; break;//Down
-              case 37: input.keys[0] &= 0xD; break;//Left
-              case 39: input.keys[0] &= 0xE; break;//Right
-              case 13: input.keys[1] &= 0x7; break;//Start
-              case 16: input.keys[1] &= 0xB; break;//Select
+  this.keyDown = function (e) {
+    interruptRelay[0xFF0F] |= 0x10
+    // if (cpu.stop=1){emulator.runGame();}
+    // console.log(e.keyCode);
+    switch (e.keyCode) {
+      case 65: this.keys[1] &= 0x0E; break // A
+      case 83: this.keys[1] &= 0x0D; break // B
+      case 38: this.keys[0] &= 0x0B; break // up
+      case 40: this.keys[0] &= 0x07; break // Down
+      case 37: this.keys[0] &= 0x0D; break // Left
+      case 39: this.keys[0] &= 0x0E; break // Right
+      case 13: this.keys[1] &= 0x07; break // Start
+      case 16: this.keys[1] &= 0x0B; break // Select
     }
   }
 
-      keyUp = function(e){
-        switch(e.keyCode){
-        case 65:  input.keys[1] |= 0x1; break;//A
-              case 83:  input.keys[1] |= 0x2; break;//B
-              case 38:  input.keys[0] |= 0x4; break;//up
-              case 40:  input.keys[0] |= 0x8; break;//down
-              case 37:  input.keys[0] |= 0x2; break;//left
-              case 39:  input.keys[0] |= 0x1; break;//right
-              case 13:  input.keys[1] |= 0x8; break;//Start
-              case 16:  input.keys[1] |= 0x4; break;//Select
-      }
+  this.keyUp = function (e) {
+    switch (e.keyCode) {
+      case 65: this.keys[1] |= 0x01; break // A
+      case 83: this.keys[1] |= 0x02; break // B
+      case 38: this.keys[0] |= 0x04; break // Up
+      case 40: this.keys[0] |= 0x08; break // Down
+      case 37: this.keys[0] |= 0x02; break // Left
+      case 39: this.keys[0] |= 0x01; break // Right
+      case 13: this.keys[1] |= 0x08; break // Start
+      case 16: this.keys[1] |= 0x04; break // Select
     }
+  }
 };
+
+module.exprots = { Input: Input }

@@ -2,6 +2,11 @@ var instructions = require('./instruction/main.js')
 var prefixCB = require('./instructions/prefixCB.js')
 var { instructionTimings, instructionLengths } = require('./cpu_maps.js')
 
+var zeroFlagMask = 0x80
+var subFlagMask = 0x40
+var halfFlagMask = 0x20
+var carryFlagMask = 0x10
+
 function CPU (memory) {
   this.registers = {
     a: 0x01,
@@ -14,13 +19,14 @@ function CPU (memory) {
     f: 0 // flags
   }
 
-  this.timer = 0
   this.pc = 0x100
   this.pcPrev = 0
-  this.sp = 0xffe
+  this.sp = 0xFFE
   this.m = 0
   this.t = 0
   this.ime = 0
+
+  this.branchTaken = 0
 
   this.instructions = instructions(this.registers, this.setFlags, this.getFlags, this.hl, memory.readByte, memory.writeByte)
   this.prefixCB = prefixCB(this.registers, this.setFlags, this.getFlags, this.hl, memory.readByte, memory.writeByte)
@@ -33,10 +39,10 @@ function CPU (memory) {
 
   this.getFlags = function () {
     return {
-      zero: this.registers.f & 0x80,
-      sub: this.registers.f & 0x40,
-      half: this.registers.f & 0x20,
-      carry: this.registers.f & 0x10
+      zero: this.registers.f & zeroFlagMask,
+      sub: this.registers.f & subFlagMask,
+      half: this.registers.f & halfFlagMask,
+      carry: this.registers.f & carryFlagMask
     }
   }
 
@@ -58,14 +64,17 @@ function CPU (memory) {
   this.ex = function (opcode) {
     this.pcPrev = this.pc
     this.instructions[opcode]()
-    this.pc += this.instruction_lengths[opcode] & 0xFFFF
+    this.pc += this.instructionLengths[opcode] & 0xFFFF
+    var cycles = this.instructionTimings[this.branchTaken][opcode]
+    this.branchTaken = 0
+    return cycles
   }
 
   // ------------------- //
   // ----- Helpers ----- //
   // ------------------- //
 
-  // finds and returns 16bit address of two 8bit registers
+  // finds and returns 16bit address from two 8bit registers
   this.getAddr = function (a, b) {
     var addr = a
     addr = addr << 8

@@ -266,6 +266,50 @@ var rl = function (cpu, memory, reg, reg2) {
 
   },
 
+  // 0x40 - 0x7F
+  var bit = function (cpu, memory, reg, bitMask, reg2) {
+    if (reg2) {
+      return () => {
+        var value = memory.readByte(cpu.hl())
+        cpu.setFlags({ carry: null, zero: !(value & bitMask), half: 1, sub: 0 })
+      }
+    } else {
+      return () => {
+        cpu.setFlags({ carry: null, zero: !(cpu.registers[reg] & bitMask), half: 1, sub: 0 })
+      }
+    }
+  }
+
+  //0x80 - 0xBF
+  var res = function (cpu, memory, reg, bitMask, reg2) {
+    if (reg2) {
+      return () => {
+        var value = memory.readByte(cpu.hl())
+        value &= bitMask
+        memory.writeByte(value, cpu.hl())
+      }
+    } else {
+      return () => {
+        cpu.registers[reg] |= bitMask
+      }
+    }
+  }
+
+  //0xC0 - 0xFF
+  var set = function (cpu, memory, reg, bitMask, reg2) {
+    if (reg2) {
+      return () => {
+      var value = memory.readByte(cpu.hl())
+      value |= bitMask
+      memory.writeByte(value, cpu.hl())
+      }
+    } else {
+      return () => {
+        cpu.registers[reg] |= bitMask
+      }
+    }
+  }
+
   //0x40
    bit_0_b: function () {
     if(cpu.b&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}

@@ -100,18 +100,16 @@ function MMU (display, input, timer, interruptRelay) {
               case 0xFF43:
               case 0xFF44:
               case 0xFF45:
-              case 0xFF46:
               case 0xFF47:
               case 0xFF48:
               case 0xFF49:
               case 0xFF4A:
               case 0xFF4B:
                 display.writeByte(data, addr)
+              break
 
-                // this.MEMORY[addr] = data
-                // oamDMATransfer(data)
-                // break
-                                            
+              case 0xFF46:
+                this.oamDMATransfer(data)
 
               default:
                 this.MEMORY[addr] = data
@@ -129,6 +127,12 @@ function MMU (display, input, timer, interruptRelay) {
         this.MEMORY[addr] = data
         break
     }
+  }
+
+  oamDMATransfer = function(addr) {
+    addr = addr << 8
+    for (var i = 0; i < 40; i += 4) {
+      display.spritedata = this.MEMORY.slice(addr, 4)
   }
 
   this.writeWord = function (data, addr) {
