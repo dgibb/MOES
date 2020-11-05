@@ -21,7 +21,7 @@
     "grunt": "^1.0.1",
     "grunt-contrib-uglify": "^3.1.0",
     "grunt-node-minify": "^1.2.3",
-    "node-sass": "^4.5.3",
+    "node-sass": "^4.13.1",
     "webpack-dev-server": "^2.4.3"
   },
   "scripts": {
