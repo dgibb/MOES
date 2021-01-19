@@ -20,7 +20,7 @@ type cpu struct {
   Branch_Flag bool
 }
 
-type Pipeline struct{
+type Pipeline struct {
   Instruction_Fetch func()
   Instruction_Decode func()
   Instruction_Execute func()
@@ -569,7 +569,7 @@ func ARM_Instruction_Decode() {
 
           case 0x05A00000:
             fmt.Printf("ID: STR from user immediate pre inc,  unimplemented, inserting NOP\n")
-            Cpu.Decode_reg.Function=NOP
+            Cpu.Decode_reg.Function = NOP
 
           case 0x05B00000:
             fmt.Printf("ID: LDR to user immediate pre inc,  unimplemented, inserting NOP\n")

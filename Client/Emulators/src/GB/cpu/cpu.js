@@ -15,8 +15,8 @@ function CPU (memory) {
     d: 0x00,
     e: 0xD8,
     h: 0x01,
-    l: 0x00,
-    f: 0 // flags
+    l: 0x14,
+    f: 0xB0 // flags
   }
 
   this.pc = 0x100

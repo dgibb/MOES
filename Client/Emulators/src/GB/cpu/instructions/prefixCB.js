@@ -57,6 +57,27 @@ var rl = function (cpu, memory, reg, reg2) {
   }
 }
 
+// 0x10 - 0x017
+var rr = function (cpu, memory, reg, reg2) {
+  if (reg2) {
+    return () => {
+      var value = memory.readByte(cpu.hl())
+      var carryIn = (cpu.getFlags().carry) ? 1 : 0
+      var carry = value & 0x80
+      value = ((value << 1) + carryIn) & 0xFF
+      cpu.setFlags({ carry: carry, zero: !cpu.b, half: 0, sub: 0 })
+      memory.writeByte(value, cpu.hl())
+    }
+  } else {
+    return () => {
+      var carry = (cpu.getFlags().carry) ? 0x80 : 0
+      var bit7 = (cpu.registers[reg] & 0x01)
+      cpu.registers[reg] = ((cpu.registers[reg] >> 1) + bit7) & 0xFF
+      cpu.setFlags({ carry: carry, zero: !cpu.registers[reg], half: 0, sub: 0 })
+    }
+  }
+}
+
 /*
 
   //0x18
@@ -266,569 +287,53 @@ var rl = function (cpu, memory, reg, reg2) {
 
   },
 
-  // 0x40 - 0x7F
-  var bit = function (cpu, memory, reg, bitMask, reg2) {
-    if (reg2) {
-      return () => {
-        var value = memory.readByte(cpu.hl())
-        cpu.setFlags({ carry: null, zero: !(value & bitMask), half: 1, sub: 0 })
-      }
-    } else {
-      return () => {
-        cpu.setFlags({ carry: null, zero: !(cpu.registers[reg] & bitMask), half: 1, sub: 0 })
-      }
-    }
-  }
+  */
 
-  //0x80 - 0xBF
-  var res = function (cpu, memory, reg, bitMask, reg2) {
-    if (reg2) {
-      return () => {
-        var value = memory.readByte(cpu.hl())
-        value &= bitMask
-        memory.writeByte(value, cpu.hl())
-      }
-    } else {
-      return () => {
-        cpu.registers[reg] |= bitMask
-      }
-    }
-  }
-
-  //0xC0 - 0xFF
-  var set = function (cpu, memory, reg, bitMask, reg2) {
-    if (reg2) {
-      return () => {
+// 0x40 - 0x7F
+var bit = function (cpu, memory, reg, bitMask, reg2) {
+  if (reg2) {
+    return () => {
       var value = memory.readByte(cpu.hl())
-      value |= bitMask
-      memory.writeByte(value, cpu.hl())
-      }
-    } else {
-      return () => {
-        cpu.registers[reg] |= bitMask
-      }
+      cpu.setFlags({ carry: null, zero: !(value & bitMask), half: 1, sub: 0 })
+    }
+  } else {
+    return () => {
+      cpu.setFlags({ carry: null, zero: !(cpu.registers[reg] & bitMask), half: 1, sub: 0 })
     }
   }
-
-  //0x40
-   bit_0_b: function () {
-    if(cpu.b&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x41
-   bit_0_c: function () {
-    if(cpu.c&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x42
-   bit_0_d: function () {
-    if(cpu.d&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x43
-   bit_0_e: function () {
-    if(cpu.e&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x44
-   bit_0_h : function() {
-    if(cpu.h&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x45
-   bit_0_l : function() {
-    if(cpu.l&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x46
-   bit_0_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x47
-   bit_0_a : function() {
-    if(cpu.a&0x01){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x48
-   bit_1_b : function() {
-    if(cpu.b&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x49
-   bit_1_c : function() {
-    if(cpu.c&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x4A
-   bit_1_d : function() {
-    if(cpu.d&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x4B
-   bit_1_e : function() {
-    if(cpu.e&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x4C
-   bit_1_h : function() {
-    if(cpu.h&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x4D
-   bit_1_l : function() {
-    if(cpu.l&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x4E
-   bit_1_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x4F
-   bit_1_a : function() {
-    if(cpu.a&0x02){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x50
-   bit_2_b : function() {
-    if(cpu.b&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x51
-   bit_2_c : function() {
-    if(cpu.c&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x52
-   bit_2_d : function() {
-    if(cpu.d&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x53
-   bit_2_e : function() {
-    if(cpu.e&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x54
-   bit_2_h : function() {
-    if(cpu.h&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x55
-   bit_2_l : function() {
-    if(cpu.l&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x56
-   bit_2_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x57
-   bit_2_a : function() {
-    if(cpu.a&0x04){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x58
-   bit_3_b : function() {
-    if(cpu.b&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x59
-   bit_3_c : function() {
-    if(cpu.c&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x5A
-   bit_3_d : function() {
-    if(cpu.d&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x5B
-   bit_3_e : function() {
-    if(cpu.e&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x5C
-   bit_3_h : function() {
-    if(cpu.h&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x5D
-   bit_3_l : function() {
-    if(cpu.l&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x5E
-   bit_3_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x5F
-   bit_3_a : function() {
-    if(cpu.a&0x08){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x60
-   bit_4_b : function() {
-    if(cpu.b&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x61
-   bit_4_c : function() {
-    if(cpu.c&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x62
-   bit_4_d : function() {
-    if(cpu.d&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x63
-   bit_4_e : function() {
-    if(cpu.e&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x64
-   bit_4_h : function() {
-    if(cpu.h&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x65
-   bit_4_l : function() {
-    if(cpu.l&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x66
-   bit_4_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x67
-   bit_4_a : function() {
-    if(cpu.a&0x10){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x68
-   bit_5_b : function() {
-    if(cpu.b&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x69
-   bit_5_c : function() {
-    if(cpu.c&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x6A
-   bit_5_d : function() {
-    if(cpu.d&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x6B
-   bit_5_e : function() {
-    if(cpu.e&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x6C
-   bit_5_h : function() {
-    if(cpu.h&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x6D
-   bit_5_l : function() {
-    if(cpu.l&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x6E
-   bit_5_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x6F
-   bit_5_a : function() {
-    if(cpu.a&0x20){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x70
-   bit_6_b : function() {
-    if(cpu.b&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x71
-   bit_6_c : function() {
-    if(cpu.c&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x72
-   bit_6_d : function() {
-    if(cpu.d&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x73
-   bit_6_e : function() {
-    if(cpu.e&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x74
-   bit_6_h : function() {
-    if(cpu.h&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x75
-   bit_6_l : function() {
-    if(cpu.l&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x76
-   bit_6_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x77
-   bit_6_a : function() {
-    if(cpu.a&0x40){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x78
-   bit_7_b : function() {
-    if(cpu.b&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x79
-   bit_7_c : function() {
-    if(cpu.c&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x7A
-   bit_7_d : function() {
-    if(cpu.d&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x7B
-   bit_7_e : function() {
-    if(cpu.e&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x7C
-   bit_7_h : function() {
-    if(cpu.h&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x7D
-   bit_7_l : function() {
-    if(cpu.l&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
-
-  //0x7E
-   bit_7_hl : function() {
-    var value=memory.readByte(cpu.hl())
-    if(value&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-    cpu.m=2 cpu.t=12
-  },
-
-  //0x7F
-   bit_7_a : function() {
-    if(cpu.a&0x80){cpu.resetZeroFlag()} else {cpu.setZeroFlag()}
-    cpu.resetSubFlag()
-    cpu.setHalfFlag()
-
-  },
+}
+
+//0x80 - 0xBF
+var res = function (cpu, memory, reg, bitMask, reg2) {
+  if (reg2) {
+    return () => {
+      var value = memory.readByte(cpu.hl())
+      value &= bitMask
+      memory.writeByte(value, cpu.hl())
+    }
+  } else {
+    return () => {
+      cpu.registers[reg] |= bitMask
+    }
+  }
+}
+
+//0xC0 - 0xFF
+var set = function (cpu, memory, reg, bitMask, reg2) {
+  if (reg2) {
+    return () => {
+    var value = memory.readByte(cpu.hl())
+    value |= bitMask
+    memory.writeByte(value, cpu.hl())
+    }
+  } else {
+    return () => {
+      cpu.registers[reg] |= bitMask
+    }
+  }
+}
+
+/*
 
   //0x80
    res_0_b: function () {
@@ -1652,6 +1157,14 @@ function PrefixCB (registers, getFlags, setFlags, readByte, writeByte) {
     rrc(cpu, memory, 'l'),
     rrc(cpu, memory, 'h', 'l'),
     rrc(cpu, memory, 'a'),
+    rl(cpu, memory, 'b'),
+    rl(cpu, memory, 'c'),
+    rl(cpu, memory, 'd'),
+    rl(cpu, memory, 'e'),
+    rl(cpu, memory, 'h'),
+    rl(cpu, memory, 'l'),
+    rl(cpu, memory, 'h', 'l'),
+    rr(cpu, memory, 'a'),
     rl(cpu, memory, 'b'),
     rl(cpu, memory, 'c'),
     rl(cpu, memory, 'd'),
